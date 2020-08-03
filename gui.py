@@ -193,5 +193,14 @@ class GUIWordsCtr(QtCore.QObject):
         self._view.txt_pl.setText(row.pl)
         self._logic.score()
         self._play()
-        # TODO resize tezt to fit in window
-        
+        # TODO resize text to fit in window
+        for widget in [self._view.txt_pl, self._view.txt_ru]:
+            while True:
+                txt_width = widget.fontMetrics().width(widget.text())
+                widget_width = widget.width()
+                if  widget_width < txt_width:
+                    font = widget.font()
+                    font.setPointSize(font.pointSize() - 1)
+                    widget.setFont(font)
+                else:
+                    break
