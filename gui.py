@@ -191,16 +191,27 @@ class GUIWordsCtr(QtCore.QObject):
     def setDisplayText(self, row):
         self._view.txt_ru.setText(row.ru)
         self._view.txt_pl.setText(row.pl)
+
         self._logic.score()
         self._play()
-        # TODO resize text to fit in window
+        # resize text to fit in window
+        # text drives the QtextLabel size, so we have two possibilities:
+        # 1.restore widget size after setting the font size
+        # 2.set text size the same in both widgets - THIS WILL TAKE
+        # 3....find option to break dependency between text size and box size....
+        font_size = 18
         for widget in [self._view.txt_pl, self._view.txt_ru]:
+            # set back the font size to std for first widget
+            # second widget will start with font already scaled down
+            font = widget.font()
+            font.setPointSize(font_size)
+            widget.setFont(font)
             while True:
                 txt_width = widget.fontMetrics().width(widget.text())
                 widget_width = widget.width()
                 if  widget_width < txt_width:
-                    font = widget.font()
-                    font.setPointSize(font.pointSize() - 1)
+                    font_size -= 1
+                    font.setPointSize(font_size)
                     widget.setFont(font)
                 else:
                     break

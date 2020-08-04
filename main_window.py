@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'main_window.ui'
+# Form implementation generated from reading ui file '.\main_window.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.0
 #
@@ -14,7 +14,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(619, 270)
+        MainWindow.resize(305, 186)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.horizontalLayout_3 = QtWidgets.QHBoxLayout(self.centralwidget)
@@ -35,15 +35,30 @@ class Ui_MainWindow(object):
         self.horizontalLayout = QtWidgets.QHBoxLayout()
         self.horizontalLayout.setObjectName("horizontalLayout")
         self.txt_ru = QtWidgets.QLineEdit(self.learn)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.txt_ru.sizePolicy().hasHeightForWidth())
+        self.txt_ru.setSizePolicy(sizePolicy)
+        self.txt_ru.setMinimumSize(QtCore.QSize(100, 35))
         font = QtGui.QFont()
         font.setPointSize(18)
+        font.setKerning(True)
         self.txt_ru.setFont(font)
+        self.txt_ru.setText("")
         self.txt_ru.setObjectName("txt_ru")
         self.horizontalLayout.addWidget(self.txt_ru)
         self.txt_pl = QtWidgets.QLineEdit(self.learn)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.txt_pl.sizePolicy().hasHeightForWidth())
+        self.txt_pl.setSizePolicy(sizePolicy)
+        self.txt_pl.setMinimumSize(QtCore.QSize(100, 35))
         font = QtGui.QFont()
         font.setPointSize(18)
         self.txt_pl.setFont(font)
+        self.txt_pl.setFrame(True)
         self.txt_pl.setObjectName("txt_pl")
         self.horizontalLayout.addWidget(self.txt_pl)
         self.btn_sound = QtWidgets.QPushButton(self.learn)
@@ -101,7 +116,7 @@ class Ui_MainWindow(object):
         self.horizontalLayout_3.addWidget(self.tabWidget)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 619, 30))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 305, 21))
         self.menubar.setToolTip("")
         self.menubar.setToolTipDuration(-1)
         self.menubar.setStatusTip("")
