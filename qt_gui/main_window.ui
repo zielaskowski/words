@@ -6,15 +6,27 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>305</width>
-    <height>186</height>
+    <width>514</width>
+    <height>551</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Learn Words</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QHBoxLayout" name="horizontalLayout_3">
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
+   <property name="minimumSize">
+    <size>
+     <width>350</width>
+     <height>0</height>
+    </size>
+   </property>
+   <layout class="QVBoxLayout" name="verticalLayout_2">
     <item>
      <widget class="QTabWidget" name="tabWidget">
       <property name="sizePolicy">
@@ -23,167 +35,1006 @@
         <verstretch>0</verstretch>
        </sizepolicy>
       </property>
+      <property name="tabShape">
+       <enum>QTabWidget::Rounded</enum>
+      </property>
       <property name="currentIndex">
        <number>0</number>
       </property>
       <widget class="QWidget" name="learn">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
        <attribute name="title">
         <string>learn</string>
        </attribute>
-       <layout class="QVBoxLayout" name="verticalLayout_2">
+       <layout class="QVBoxLayout" name="verticalLayout">
         <item>
-         <layout class="QVBoxLayout" name="verticalLayout">
+         <layout class="QHBoxLayout" name="horizontalLayout">
           <item>
-           <layout class="QHBoxLayout" name="horizontalLayout">
-            <item>
-             <widget class="QLineEdit" name="txt_ru">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="minimumSize">
-               <size>
-                <width>100</width>
-                <height>35</height>
-               </size>
-              </property>
-              <property name="font">
-               <font>
-                <pointsize>18</pointsize>
-                <kerning>true</kerning>
-               </font>
-              </property>
-              <property name="text">
-               <string/>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLineEdit" name="txt_pl">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="minimumSize">
-               <size>
-                <width>100</width>
-                <height>35</height>
-               </size>
-              </property>
-              <property name="font">
-               <font>
-                <pointsize>18</pointsize>
-               </font>
-              </property>
-              <property name="frame">
-               <bool>true</bool>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QPushButton" name="btn_sound">
-              <property name="enabled">
-               <bool>true</bool>
-              </property>
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="minimumSize">
-               <size>
-                <width>47</width>
-                <height>47</height>
-               </size>
-              </property>
-              <property name="maximumSize">
-               <size>
-                <width>47</width>
-                <height>47</height>
-               </size>
-              </property>
-              <property name="text">
-               <string/>
-              </property>
-              <property name="icon">
-               <iconset resource="resources.qrc">
-                <normaloff>:/resources/resources/sound.png</normaloff>:/resources/resources/sound.png</iconset>
-              </property>
-              <property name="iconSize">
-               <size>
-                <width>35</width>
-                <height>35</height>
-               </size>
-              </property>
-             </widget>
-            </item>
-           </layout>
+           <widget class="QLineEdit" name="txt_ru">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>100</width>
+              <height>47</height>
+             </size>
+            </property>
+            <property name="font">
+             <font>
+              <pointsize>18</pointsize>
+              <kerning>true</kerning>
+             </font>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+           </widget>
           </item>
           <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_2">
-            <item>
-             <widget class="QPushButton" name="btn_previous">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="minimumSize">
-               <size>
-                <width>80</width>
-                <height>0</height>
-               </size>
-              </property>
-              <property name="text">
-               <string>Previous</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QPushButton" name="btn_rand">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="minimumSize">
-               <size>
-                <width>80</width>
-                <height>0</height>
-               </size>
-              </property>
-              <property name="text">
-               <string>Random</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QPushButton" name="btn_next">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="minimumSize">
-               <size>
-                <width>80</width>
-                <height>0</height>
-               </size>
-              </property>
-              <property name="text">
-               <string>Next</string>
-              </property>
-             </widget>
-            </item>
-           </layout>
+           <widget class="QLineEdit" name="txt_pl">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>100</width>
+              <height>47</height>
+             </size>
+            </property>
+            <property name="font">
+             <font>
+              <pointsize>18</pointsize>
+             </font>
+            </property>
+            <property name="frame">
+             <bool>true</bool>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="btn_sound">
+            <property name="enabled">
+             <bool>true</bool>
+            </property>
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>70</width>
+              <height>60</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>60</width>
+              <height>60</height>
+             </size>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="icon">
+             <iconset resource="resources.qrc">
+              <normaloff>:/resources/resources/sound.png</normaloff>:/resources/resources/sound.png</iconset>
+            </property>
+            <property name="iconSize">
+             <size>
+              <width>50</width>
+              <height>50</height>
+             </size>
+            </property>
+            <property name="flat">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_4">
+          <item>
+           <widget class="QTabWidget" name="tabWidget_desc">
+            <property name="tabPosition">
+             <enum>QTabWidget::East</enum>
+            </property>
+            <property name="currentIndex">
+             <number>0</number>
+            </property>
+            <property name="iconSize">
+             <size>
+              <width>50</width>
+              <height>50</height>
+             </size>
+            </property>
+            <widget class="QWidget" name="tagger">
+             <attribute name="icon">
+              <iconset resource="resources.qrc">
+               <normaloff>:/resources/resources/tag-icon.png</normaloff>:/resources/resources/tag-icon.png</iconset>
+             </attribute>
+             <attribute name="title">
+              <string/>
+             </attribute>
+             <layout class="QHBoxLayout" name="horizontalLayout_7">
+              <item>
+               <widget class="QTabWidget" name="tabWidget_tager">
+                <property name="currentIndex">
+                 <number>0</number>
+                </property>
+                <widget class="QWidget" name="tab_20">
+                 <attribute name="title">
+                  <string>Tab 1</string>
+                 </attribute>
+                 <layout class="QVBoxLayout" name="verticalLayout_6">
+                  <item>
+                   <widget class="QScrollArea" name="scrollArea_21">
+                    <property name="widgetResizable">
+                     <bool>true</bool>
+                    </property>
+                    <widget class="QWidget" name="scrollAreaWidgetContents_21">
+                     <property name="geometry">
+                      <rect>
+                       <x>0</x>
+                       <y>0</y>
+                       <width>371</width>
+                       <height>244</height>
+                      </rect>
+                     </property>
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
+                     <layout class="QHBoxLayout" name="horizontalLayout_9">
+                      <item>
+                       <widget class="QLabel" name="txt_desc_tager_1">
+                        <property name="mouseTracking">
+                         <bool>true</bool>
+                        </property>
+                        <property name="text">
+                         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;TextLabel&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                        </property>
+                        <property name="wordWrap">
+                         <bool>true</bool>
+                        </property>
+                        <property name="textInteractionFlags">
+                         <set>Qt::TextSelectableByMouse</set>
+                        </property>
+                       </widget>
+                      </item>
+                     </layout>
+                    </widget>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+                <widget class="QWidget" name="tab_21">
+                 <attribute name="title">
+                  <string>Tab 2</string>
+                 </attribute>
+                 <layout class="QHBoxLayout" name="horizontalLayout_42">
+                  <item>
+                   <widget class="QScrollArea" name="scrollArea_22">
+                    <property name="widgetResizable">
+                     <bool>true</bool>
+                    </property>
+                    <widget class="QWidget" name="scrollAreaWidgetContents_22">
+                     <property name="geometry">
+                      <rect>
+                       <x>0</x>
+                       <y>0</y>
+                       <width>371</width>
+                       <height>244</height>
+                      </rect>
+                     </property>
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
+                     <layout class="QHBoxLayout" name="horizontalLayout_43">
+                      <item>
+                       <widget class="QLabel" name="txt_desc_tager_2">
+                        <property name="text">
+                         <string>TextLabel</string>
+                        </property>
+                        <property name="wordWrap">
+                         <bool>true</bool>
+                        </property>
+                        <property name="textInteractionFlags">
+                         <set>Qt::TextSelectableByMouse</set>
+                        </property>
+                       </widget>
+                      </item>
+                     </layout>
+                    </widget>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+                <widget class="QWidget" name="tab_22">
+                 <attribute name="title">
+                  <string>Page</string>
+                 </attribute>
+                 <layout class="QHBoxLayout" name="horizontalLayout_44">
+                  <item>
+                   <widget class="QScrollArea" name="scrollArea_23">
+                    <property name="widgetResizable">
+                     <bool>true</bool>
+                    </property>
+                    <widget class="QWidget" name="scrollAreaWidgetContents_23">
+                     <property name="geometry">
+                      <rect>
+                       <x>0</x>
+                       <y>0</y>
+                       <width>96</width>
+                       <height>30</height>
+                      </rect>
+                     </property>
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
+                     <layout class="QHBoxLayout" name="horizontalLayout_45">
+                      <item>
+                       <widget class="QLabel" name="txt_desc_tager_3">
+                        <property name="text">
+                         <string>TextLabel</string>
+                        </property>
+                        <property name="wordWrap">
+                         <bool>true</bool>
+                        </property>
+                        <property name="textInteractionFlags">
+                         <set>Qt::TextSelectableByMouse</set>
+                        </property>
+                       </widget>
+                      </item>
+                     </layout>
+                    </widget>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+                <widget class="QWidget" name="tab_23">
+                 <attribute name="title">
+                  <string>Page</string>
+                 </attribute>
+                 <layout class="QHBoxLayout" name="horizontalLayout_46">
+                  <item>
+                   <widget class="QScrollArea" name="scrollArea_24">
+                    <property name="widgetResizable">
+                     <bool>true</bool>
+                    </property>
+                    <widget class="QWidget" name="scrollAreaWidgetContents_24">
+                     <property name="geometry">
+                      <rect>
+                       <x>0</x>
+                       <y>0</y>
+                       <width>96</width>
+                       <height>30</height>
+                      </rect>
+                     </property>
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
+                     <layout class="QHBoxLayout" name="horizontalLayout_47">
+                      <item>
+                       <widget class="QLabel" name="txt_desc_tager_4">
+                        <property name="text">
+                         <string>TextLabel</string>
+                        </property>
+                        <property name="wordWrap">
+                         <bool>true</bool>
+                        </property>
+                        <property name="textInteractionFlags">
+                         <set>Qt::TextSelectableByMouse</set>
+                        </property>
+                       </widget>
+                      </item>
+                     </layout>
+                    </widget>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+                <widget class="QWidget" name="tab_24">
+                 <attribute name="title">
+                  <string>Page</string>
+                 </attribute>
+                 <layout class="QHBoxLayout" name="horizontalLayout_48">
+                  <item>
+                   <widget class="QScrollArea" name="scrollArea_25">
+                    <property name="widgetResizable">
+                     <bool>true</bool>
+                    </property>
+                    <widget class="QWidget" name="scrollAreaWidgetContents_25">
+                     <property name="geometry">
+                      <rect>
+                       <x>0</x>
+                       <y>0</y>
+                       <width>96</width>
+                       <height>30</height>
+                      </rect>
+                     </property>
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
+                     <layout class="QHBoxLayout" name="horizontalLayout_49">
+                      <item>
+                       <widget class="QLabel" name="txt_desc_tager_5">
+                        <property name="text">
+                         <string>TextLabel</string>
+                        </property>
+                        <property name="wordWrap">
+                         <bool>true</bool>
+                        </property>
+                        <property name="textInteractionFlags">
+                         <set>Qt::TextSelectableByMouse</set>
+                        </property>
+                       </widget>
+                      </item>
+                     </layout>
+                    </widget>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+            <widget class="QWidget" name="wiki">
+             <attribute name="icon">
+              <iconset resource="resources.qrc">
+               <normaloff>:/resources/resources/wiki.png</normaloff>:/resources/resources/wiki.png</iconset>
+             </attribute>
+             <attribute name="title">
+              <string/>
+             </attribute>
+             <layout class="QHBoxLayout" name="horizontalLayout_8">
+              <item>
+               <widget class="QTabWidget" name="tabWidget_wiki">
+                <property name="currentIndex">
+                 <number>0</number>
+                </property>
+                <widget class="QWidget" name="tab_15">
+                 <attribute name="title">
+                  <string>Tab 1</string>
+                 </attribute>
+                 <layout class="QVBoxLayout" name="verticalLayout_5">
+                  <item>
+                   <widget class="QScrollArea" name="scrollArea_16">
+                    <property name="widgetResizable">
+                     <bool>true</bool>
+                    </property>
+                    <widget class="QWidget" name="scrollAreaWidgetContents_16">
+                     <property name="geometry">
+                      <rect>
+                       <x>0</x>
+                       <y>0</y>
+                       <width>371</width>
+                       <height>244</height>
+                      </rect>
+                     </property>
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
+                     <layout class="QHBoxLayout" name="horizontalLayout_6">
+                      <item>
+                       <widget class="QLabel" name="txt_desc_wiki_1">
+                        <property name="text">
+                         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;TextLabel&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                        </property>
+                        <property name="wordWrap">
+                         <bool>true</bool>
+                        </property>
+                        <property name="textInteractionFlags">
+                         <set>Qt::TextSelectableByMouse</set>
+                        </property>
+                       </widget>
+                      </item>
+                     </layout>
+                    </widget>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+                <widget class="QWidget" name="tab_16">
+                 <attribute name="title">
+                  <string>Tab 2</string>
+                 </attribute>
+                 <layout class="QHBoxLayout" name="horizontalLayout_34">
+                  <item>
+                   <widget class="QScrollArea" name="scrollArea_17">
+                    <property name="widgetResizable">
+                     <bool>true</bool>
+                    </property>
+                    <widget class="QWidget" name="scrollAreaWidgetContents_17">
+                     <property name="geometry">
+                      <rect>
+                       <x>0</x>
+                       <y>0</y>
+                       <width>96</width>
+                       <height>30</height>
+                      </rect>
+                     </property>
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
+                     <layout class="QHBoxLayout" name="horizontalLayout_35">
+                      <item>
+                       <widget class="QLabel" name="txt_desc_wiki_2">
+                        <property name="text">
+                         <string>TextLabel</string>
+                        </property>
+                        <property name="wordWrap">
+                         <bool>true</bool>
+                        </property>
+                        <property name="textInteractionFlags">
+                         <set>Qt::TextSelectableByMouse</set>
+                        </property>
+                       </widget>
+                      </item>
+                     </layout>
+                    </widget>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+                <widget class="QWidget" name="tab_17">
+                 <attribute name="title">
+                  <string>Page</string>
+                 </attribute>
+                 <layout class="QHBoxLayout" name="horizontalLayout_36">
+                  <item>
+                   <widget class="QScrollArea" name="scrollArea_18">
+                    <property name="widgetResizable">
+                     <bool>true</bool>
+                    </property>
+                    <widget class="QWidget" name="scrollAreaWidgetContents_18">
+                     <property name="geometry">
+                      <rect>
+                       <x>0</x>
+                       <y>0</y>
+                       <width>96</width>
+                       <height>30</height>
+                      </rect>
+                     </property>
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
+                     <layout class="QHBoxLayout" name="horizontalLayout_37">
+                      <item>
+                       <widget class="QLabel" name="txt_desc_wiki_3">
+                        <property name="text">
+                         <string>TextLabel</string>
+                        </property>
+                        <property name="wordWrap">
+                         <bool>true</bool>
+                        </property>
+                        <property name="textInteractionFlags">
+                         <set>Qt::TextSelectableByMouse</set>
+                        </property>
+                       </widget>
+                      </item>
+                     </layout>
+                    </widget>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+                <widget class="QWidget" name="tab_18">
+                 <attribute name="title">
+                  <string>Page</string>
+                 </attribute>
+                 <layout class="QHBoxLayout" name="horizontalLayout_38">
+                  <item>
+                   <widget class="QScrollArea" name="scrollArea_19">
+                    <property name="widgetResizable">
+                     <bool>true</bool>
+                    </property>
+                    <widget class="QWidget" name="scrollAreaWidgetContents_19">
+                     <property name="geometry">
+                      <rect>
+                       <x>0</x>
+                       <y>0</y>
+                       <width>96</width>
+                       <height>30</height>
+                      </rect>
+                     </property>
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
+                     <layout class="QHBoxLayout" name="horizontalLayout_39">
+                      <item>
+                       <widget class="QLabel" name="txt_desc_wiki_4">
+                        <property name="text">
+                         <string>TextLabel</string>
+                        </property>
+                        <property name="wordWrap">
+                         <bool>true</bool>
+                        </property>
+                        <property name="textInteractionFlags">
+                         <set>Qt::NoTextInteraction</set>
+                        </property>
+                       </widget>
+                      </item>
+                     </layout>
+                    </widget>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+                <widget class="QWidget" name="tab_19">
+                 <attribute name="title">
+                  <string>Page</string>
+                 </attribute>
+                 <layout class="QHBoxLayout" name="horizontalLayout_40">
+                  <item>
+                   <widget class="QScrollArea" name="scrollArea_20">
+                    <property name="widgetResizable">
+                     <bool>true</bool>
+                    </property>
+                    <widget class="QWidget" name="scrollAreaWidgetContents_20">
+                     <property name="geometry">
+                      <rect>
+                       <x>0</x>
+                       <y>0</y>
+                       <width>371</width>
+                       <height>244</height>
+                      </rect>
+                     </property>
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
+                     <layout class="QHBoxLayout" name="horizontalLayout_41">
+                      <item>
+                       <widget class="QLabel" name="txt_desc_wiki_5">
+                        <property name="text">
+                         <string>TextLabel</string>
+                        </property>
+                        <property name="wordWrap">
+                         <bool>true</bool>
+                        </property>
+                        <property name="textInteractionFlags">
+                         <set>Qt::TextSelectableByMouse</set>
+                        </property>
+                       </widget>
+                      </item>
+                     </layout>
+                    </widget>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+            <widget class="QWidget" name="googl">
+             <attribute name="icon">
+              <iconset resource="resources.qrc">
+               <normaloff>:/resources/resources/google.png</normaloff>:/resources/resources/google.png</iconset>
+             </attribute>
+             <attribute name="title">
+              <string/>
+             </attribute>
+             <layout class="QHBoxLayout" name="horizontalLayout_5">
+              <item>
+               <widget class="QTabWidget" name="tabWidget_goog">
+                <property name="currentIndex">
+                 <number>4</number>
+                </property>
+                <widget class="QWidget" name="tab_5">
+                 <attribute name="title">
+                  <string>Tab 1</string>
+                 </attribute>
+                 <layout class="QVBoxLayout" name="verticalLayout_3">
+                  <item>
+                   <widget class="QScrollArea" name="scrollArea_11">
+                    <property name="widgetResizable">
+                     <bool>true</bool>
+                    </property>
+                    <widget class="QWidget" name="scrollAreaWidgetContents_11">
+                     <property name="geometry">
+                      <rect>
+                       <x>0</x>
+                       <y>0</y>
+                       <width>96</width>
+                       <height>30</height>
+                      </rect>
+                     </property>
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
+                     <layout class="QHBoxLayout" name="horizontalLayout_3">
+                      <item>
+                       <widget class="QLabel" name="txt_desc_goog_1">
+                        <property name="text">
+                         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;TextLabel&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                        </property>
+                        <property name="wordWrap">
+                         <bool>true</bool>
+                        </property>
+                        <property name="textInteractionFlags">
+                         <set>Qt::TextSelectableByMouse</set>
+                        </property>
+                       </widget>
+                      </item>
+                     </layout>
+                    </widget>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+                <widget class="QWidget" name="tab_6">
+                 <attribute name="title">
+                  <string>Tab 2</string>
+                 </attribute>
+                 <layout class="QHBoxLayout" name="horizontalLayout_26">
+                  <item>
+                   <widget class="QScrollArea" name="scrollArea_12">
+                    <property name="widgetResizable">
+                     <bool>true</bool>
+                    </property>
+                    <widget class="QWidget" name="scrollAreaWidgetContents_12">
+                     <property name="geometry">
+                      <rect>
+                       <x>0</x>
+                       <y>0</y>
+                       <width>96</width>
+                       <height>30</height>
+                      </rect>
+                     </property>
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
+                     <layout class="QHBoxLayout" name="horizontalLayout_27">
+                      <item>
+                       <widget class="QLabel" name="txt_desc_goog_2">
+                        <property name="text">
+                         <string>TextLabel</string>
+                        </property>
+                        <property name="wordWrap">
+                         <bool>true</bool>
+                        </property>
+                        <property name="textInteractionFlags">
+                         <set>Qt::TextSelectableByMouse</set>
+                        </property>
+                       </widget>
+                      </item>
+                     </layout>
+                    </widget>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+                <widget class="QWidget" name="tab_7">
+                 <attribute name="title">
+                  <string>Page</string>
+                 </attribute>
+                 <layout class="QHBoxLayout" name="horizontalLayout_28">
+                  <item>
+                   <widget class="QScrollArea" name="scrollArea_13">
+                    <property name="widgetResizable">
+                     <bool>true</bool>
+                    </property>
+                    <widget class="QWidget" name="scrollAreaWidgetContents_13">
+                     <property name="geometry">
+                      <rect>
+                       <x>0</x>
+                       <y>0</y>
+                       <width>96</width>
+                       <height>30</height>
+                      </rect>
+                     </property>
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
+                     <layout class="QHBoxLayout" name="horizontalLayout_29">
+                      <item>
+                       <widget class="QLabel" name="txt_desc_goog_3">
+                        <property name="text">
+                         <string>TextLabel</string>
+                        </property>
+                        <property name="wordWrap">
+                         <bool>true</bool>
+                        </property>
+                        <property name="textInteractionFlags">
+                         <set>Qt::TextSelectableByMouse</set>
+                        </property>
+                       </widget>
+                      </item>
+                     </layout>
+                    </widget>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+                <widget class="QWidget" name="tab_13">
+                 <attribute name="title">
+                  <string>Page</string>
+                 </attribute>
+                 <layout class="QHBoxLayout" name="horizontalLayout_30">
+                  <item>
+                   <widget class="QScrollArea" name="scrollArea_14">
+                    <property name="widgetResizable">
+                     <bool>true</bool>
+                    </property>
+                    <widget class="QWidget" name="scrollAreaWidgetContents_14">
+                     <property name="geometry">
+                      <rect>
+                       <x>0</x>
+                       <y>0</y>
+                       <width>96</width>
+                       <height>30</height>
+                      </rect>
+                     </property>
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
+                     <layout class="QHBoxLayout" name="horizontalLayout_31">
+                      <item>
+                       <widget class="QLabel" name="txt_desc_goog_4">
+                        <property name="text">
+                         <string>TextLabel</string>
+                        </property>
+                        <property name="wordWrap">
+                         <bool>true</bool>
+                        </property>
+                        <property name="textInteractionFlags">
+                         <set>Qt::TextSelectableByMouse</set>
+                        </property>
+                       </widget>
+                      </item>
+                     </layout>
+                    </widget>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+                <widget class="QWidget" name="tab_14">
+                 <attribute name="title">
+                  <string>Page</string>
+                 </attribute>
+                 <layout class="QHBoxLayout" name="horizontalLayout_32">
+                  <item>
+                   <widget class="QScrollArea" name="scrollArea_15">
+                    <property name="widgetResizable">
+                     <bool>true</bool>
+                    </property>
+                    <widget class="QWidget" name="scrollAreaWidgetContents_15">
+                     <property name="geometry">
+                      <rect>
+                       <x>0</x>
+                       <y>0</y>
+                       <width>371</width>
+                       <height>244</height>
+                      </rect>
+                     </property>
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
+                     <layout class="QHBoxLayout" name="horizontalLayout_33">
+                      <item>
+                       <widget class="QLabel" name="txt_desc_goog_5">
+                        <property name="text">
+                         <string>TextLabel</string>
+                        </property>
+                        <property name="wordWrap">
+                         <bool>true</bool>
+                        </property>
+                        <property name="textInteractionFlags">
+                         <set>Qt::TextSelectableByMouse</set>
+                        </property>
+                       </widget>
+                      </item>
+                     </layout>
+                    </widget>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </widget>
+          </item>
+          <item>
+           <layout class="QVBoxLayout" name="verticalLayout_4"/>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_2">
+          <item>
+           <widget class="QPushButton" name="btn_add">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="icon">
+             <iconset resource="resources.qrc">
+              <normaloff>:/resources/resources/add.png</normaloff>:/resources/resources/add.png</iconset>
+            </property>
+            <property name="flat">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="btn_del">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="icon">
+             <iconset resource="resources.qrc">
+              <normaloff>:/resources/resources/delete-512.png</normaloff>:/resources/resources/delete-512.png</iconset>
+            </property>
+            <property name="flat">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="btn_previous">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>80</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="icon">
+             <iconset resource="resources.qrc">
+              <normaloff>:/resources/resources/prev.png</normaloff>:/resources/resources/prev.png</iconset>
+            </property>
+            <property name="flat">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="btn_rand">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>80</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="icon">
+             <iconset resource="resources.qrc">
+              <normaloff>:/resources/resources/rand.png</normaloff>:/resources/resources/rand.png</iconset>
+            </property>
+            <property name="iconSize">
+             <size>
+              <width>30</width>
+              <height>30</height>
+             </size>
+            </property>
+            <property name="shortcut">
+             <string>Esc, Esc, Esc, Esc</string>
+            </property>
+            <property name="flat">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="btn_next">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>80</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="icon">
+             <iconset resource="resources.qrc">
+              <normaloff>:/resources/resources/next.png</normaloff>:/resources/resources/next.png</iconset>
+            </property>
+            <property name="flat">
+             <bool>true</bool>
+            </property>
+           </widget>
           </item>
          </layout>
         </item>
@@ -203,8 +1054,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>305</width>
-     <height>21</height>
+     <width>514</width>
+     <height>30</height>
     </rect>
    </property>
    <property name="toolTip">
@@ -256,6 +1107,9 @@
    </property>
   </action>
   <action name="save_DB">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>save DB</string>
    </property>
@@ -274,7 +1128,7 @@
     <string>import TXT</string>
    </property>
    <property name="statusTip">
-    <string>import pair of words from TXT file</string>
+    <string>import words from TXT file and append to active DB</string>
    </property>
   </action>
   <action name="exit">

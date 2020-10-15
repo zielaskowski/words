@@ -48,22 +48,16 @@
      </property>
      <widget class="QWidget" name="importTab">
       <attribute name="title">
-       <string>imported</string>
+       <string>to be imported</string>
       </attribute>
       <layout class="QHBoxLayout" name="horizontalLayout_2">
        <item>
-        <widget class="QTextBrowser" name="import_status_list">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
+        <widget class="QTableWidget" name="import_status_table">
+         <property name="frameShape">
+          <enum>QFrame::NoFrame</enum>
          </property>
-         <property name="autoFillBackground">
-          <bool>false</bool>
-         </property>
-         <property name="frameShadow">
-          <enum>QFrame::Plain</enum>
+         <property name="gridStyle">
+          <enum>Qt::DashLine</enum>
          </property>
         </widget>
        </item>
@@ -73,18 +67,7 @@
       <attribute name="title">
        <string>error</string>
       </attribute>
-      <layout class="QVBoxLayout" name="verticalLayout_2">
-       <item>
-        <widget class="QPlainTextEdit" name="import_error_list">
-         <property name="readOnly">
-          <bool>false</bool>
-         </property>
-         <property name="plainText">
-          <string notr="true"/>
-         </property>
-        </widget>
-       </item>
-      </layout>
+      <layout class="QVBoxLayout" name="verticalLayout_2"/>
      </widget>
     </widget>
    </item>
@@ -144,6 +127,13 @@
       </widget>
      </item>
     </layout>
+   </item>
+   <item>
+    <widget class="QLabel" name="label_2">
+     <property name="text">
+      <string>Imported records will be apended to opened db.</string>
+     </property>
+    </widget>
    </item>
   </layout>
  </widget>
