@@ -1,0 +1,58 @@
+IMPORT: delete row with right click
+IMPORT: sort errors so first are YES? different colors for error groups.
+IMPORT: if duplicated ru, but different pl, allow decision what to do (merge, pl1 or pl2)
+GUI: main window add google translation. there is a library for that...
+GUI: edit db
+GUI: delete and add buttons
+TEST: do
+HELP: brief description. Popup window first time
+GUI: search filed
+
+GUI: zmiana ru nie zawsze odswieza wikipedie
+GUI: musi byc sposob wpisania null jako nowe slowo
+GUI: moze byc ze slowo istnieje w wiki pl albo ru, ale nie ma interesujacych danych: powinna sie pojawic info no data
+
+
+
+WIKI error:
+год - odmiana ru
+привези его из школы - crash
+
+
+
+
+
+
+/home/mi/Dropbox/prog/python/words/modules.py:490: SettingWithCopyWarning: 
+A value is trying to be set on a copy of a slice from a DataFrame
+
+See the caveats in the documentation: https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
+  gramma_trans.dropna(axis=1, inplace= True)
+  
+
+  
+_readLastDB
+	_logic.Print()
+		_logic.tager.tag()
+		_logic.wiki.checkWiki()
+	setDisplayTest
+		adjDisplaySize()
+		setDescText() {_logic.tager.wrd_len
+						}
+		_wikiAvailable() {_logic.wiki.wrd
+						}
+		_logic.score()
+		_play()
+			_logic.Print(i)
+				_logic.tager.tag()
+				_logic.wiki.checkWiki()
+	disp_statusbar()
+
+_newDB
+	_logic.write_sql_db()
+	_logic.Print()
+		_logic.tager.tag()
+		_logic.wiki.checkWiki()
+	setDisplayTest
+			
+	

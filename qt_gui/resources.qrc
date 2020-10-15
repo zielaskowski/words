@@ -1,5 +1,13 @@
 <RCC>
   <qresource prefix="resources">
+    <file>resources/add.png</file>
+    <file>resources/delete-512.png</file>
+    <file>resources/prev.png</file>
+    <file>resources/next.png</file>
+    <file>resources/rand.png</file>
+    <file>resources/tag-icon.png</file>
+    <file>resources/google.png</file>
+    <file>resources/wiki.png</file>
     <file>resources/sound.png</file>
   </qresource>
 </RCC>
