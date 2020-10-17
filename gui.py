@@ -1,11 +1,12 @@
-from main_window import QtCore, QtGui, QtWidgets, Ui_MainWindow
-from import_window import Ui_ImportWindow
+from words.qt_gui.main_window import QtCore, QtGui, QtWidgets, Ui_MainWindow
+from words.qt_gui.import_window import Ui_ImportWindow
 from PyQt5.QtWidgets import QFileDialog
 from PyQt5 import QtMultimedia
 from gtts import gTTS
-from modules import FileSystem, Dictionary, Wiki
+from words.modules import FileSystem, Dictionary, Wiki
 import json
 import pandas as pd
+
 
 
 class GUIWords(QtWidgets.QMainWindow, Ui_MainWindow):
