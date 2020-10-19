@@ -238,14 +238,14 @@ class FileSystem:
     _NAME = 1  # location of name in self._fileXXX list
     _EXT = 2  # location of extension in self._fileXXX list
     def __init__(self):
-        self._fileIMP = []
-        self._fileDB = []
-        self._fileAPP = []
+        self._fileIMP = ['','','']
+        self._fileDB = ['','','']
+        self._fileAPP = ['','','']
         self._fileMP3 = ['opt', 'word', '.mp3']  # name is constant, path will be taken from self._fileAPP
         self._fileCONF = ['opt', 'conf', '.txt']  # Configuration file. name is constant
         self._fileTags = ['opt', 'RU_tagset', '.txt'] #  Tags description for tagger
-        self._fileTagsTrans = ['./opt/', 'RU_tagset_trans', '.txt'] # Tags translation to pl
-        self.option = ["LastDB", "style"]
+        self._fileTagsTrans = ['opt', 'RU_tagset_trans', '.txt'] # Tags translation to pl
+        self.option = ["LastDB", "welcome"]
         self.typeIMP = ['text', '.txt']
         self.typeDB = ['SQlite3', '.s3db']
         
@@ -254,86 +254,107 @@ class FileSystem:
         self._fileCONF[self._PATH] = self._fileAPP[self._PATH] + self._fileCONF[self._PATH] + self._PS
         self._fileTags[self._PATH] = self._fileAPP[self._PATH] + self._fileTags[self._PATH] + self._PS
         self._fileTagsTrans[self._PATH] = self._fileAPP[self._PATH] + self._fileTagsTrans[self._PATH] + self._PS
-        self._touchCONF()
+        self._checkCONF()
+        self.setDB(self.getOpt('LastDB'))
     
-    def getTags(self, path_only=False, file_only=False):
-        """Returns file path (inculding filename) to Tags description file
-
-        Tagger return symbolic description, file translate symbols to meaningfull description
+    def getTags(self, path=False, file=False):
+        """Returns file path (inculding filename) to Tags description file. \n
+        Tagger return symbolic description, file translate symbols to meaningfull description \n
         TODO: in case file is missing download from gitHUB
         """
+        if not self._fileTags[0]:
+            return ''
+        fp = ''
+        if path:
+            fp += self._fileTags[self._PATH]
+        if file:
+            fp += self._fileTags[self._NAME] + self._fileTags[self._EXT]
+        if not path and  not file:  #all: path+name+ext
+            fp = self._fileTags[self._PATH] + self._fileTags[self._NAME] + self._fileTags[self._EXT]
+        return fp
 
-        if path_only:
-            return self._fileTags[self._PATH]
-        elif file_only:
-            return self._fileTags[self._NAME] + self._fileTags[self._EXT]
-        else:  #all: path+name+ext
-            return self._fileTags[self._PATH] + self._fileTags[self._NAME] + self._fileTags[self._EXT]
-
-    def getTagsTrans(self, path_only=False, file_only=False):
+    def getTagsTrans(self, path=False, file=False):
         """Returns file path (inculding filename) to Tags translation file
 
         Tags description are in EN, file contain translation to PL
         TODO: in case file is missing download from gitHUB
         """
+        if not self._fileTagsTrans[0]:
+            return ''
+        fp = ''
+        if path:
+            fp += self._fileTagsTrans[self._PATH]
+        if file:
+            fp += self._fileTagsTrans[self._NAME] + self._fileTagsTrans[self._EXT]
+        if not path and not file:  #all: path+name+ext
+            fp = self._fileTagsTrans[self._PATH] + self._fileTagsTrans[self._NAME] + self._fileTagsTrans[self._EXT]
+        return fp
 
-        if path_only:
-            return self._fileTagsTrans[self._PATH]
-        elif file_only:
-            return self._fileTagsTrans[self._NAME] + self._fileTagsTrans[self._EXT]
-        else:  #all: path+name+ext
-            return self._fileTagsTrans[self._PATH] + self._fileTagsTrans[self._NAME] + self._fileTagsTrans[self._EXT]
-
-    def getMP3(self, path_only=False, file_only=False):
+    def getMP3(self, path=False, file=False):
         """Returns file path (inculding filename) to mp3 file
 
         mp3 file is used to store temporary the prononcuation of the word
         recived from Google (gTTS). If appropraite option is given, can return only
         path or only filename
         """
+        if not self._fileMP3[0]:
+            return ''
+        fp = ''
+        if path:
+            fp += self._fileMP3[self._PATH]
+        if file:
+            fp += self._fileMP3[self._NAME] + self._fileMP3[self._EXT]
+        if not path and not file:  #all: path+name+ext
+            fp = self._fileMP3[self._PATH] + self._fileMP3[self._NAME] + self._fileMP3[self._EXT]
+        return fp
 
-        if path_only:
-            return self._fileMP3[self._PATH]
-        elif file_only:
-            return self._fileMP3[self._NAME] + self._fileMP3[self._EXT]
-        else:  #all: path+name+ext
-            return self._fileMP3[self._PATH] + self._fileMP3[self._NAME] + self._fileMP3[self._EXT]
-
-    def setIMP(self, path):
+    def setIMP(self, path: str):
         self._fileIMP = self._split_path(path[0])
 
-    def getIMP(self, path_only=False, file_only=False, ext_type=False):
-        if ext_type:  # 'Text (*.txt)'
-            return self.typeIMP[0] + ' (*' + self.typeIMP[1] + ' *.*)'
-        if not self._fileIMP:
-            return []
-        if path_only:
-            return self._fileIMP[self._PATH]
-        elif file_only:
-            return self._fileIMP[self._NAME] + self._fileIMP[self._EXT]
-        else:  #all: path+name+ext
-            return self._fileIMP[self._PATH] + self._fileIMP[self._NAME] + self._fileIMP[self._EXT]
+    def getIMP(self, path=False, file=False, ext=False):
+        if not ext and not self._fileIMP[0]:
+            return ''
+        fp = ''
+        if path:
+            fp += self._fileIMP[self._PATH]
+        if file:
+            fp += self._fileIMP[self._NAME] + self._fileIMP[self._EXT]
+        if ext:  # 'text (*.txt)'
+            fp += self.typeIMP[0] + ' (*' + self.typeIMP[1] + ')'
+        if not path and not file and not ext:  #all: path+name+ext
+            fp = self._fileIMP[self._PATH] + self._fileIMP[self._NAME] + self._fileIMP[self._EXT]
+        return fp
 
-    def setDB(self, path: list):
-        """set path and filename for DB.
+    def setDB(self, path: str):
+        """set path and filename for DB. \n
+        checks if file exist
         """
         # override file extension. No other than s3db can be opened
         self._fileDB = self._split_path(path)
         self._fileDB[self._EXT] = self.typeDB[1]
+        try:
+            with open(self.getDB(path=True, file=True)) as f:
+                pass
+        except: # file is missing
+            self.writeOpt('LastDB','')
+            self._fileDB = ['','','']
 
-    def getDB(self, path_only=False, file_only=False, ext_type=False):
-        """input typical for QtFileDialog: ('/..../dic_empty.txt', 'SQlite3 (*.s3db)')
+    def getDB(self, path=False, file=False, ext=False):
+        """ext=True: input typical for QtFileDialog: ('SQlite3 (*.s3db)') \n
+        all False: path+file+ext
         """
-        if ext_type:  # 'SQlite (*.s3db)'
-            return self.typeDB[0] + ' (*' + self.typeDB[1] + ')'
-        if not self._fileDB: 
-            return []
-        if path_only:
-            return self._fileDB[self._PATH]
-        elif file_only:
-            return self._fileDB[self._NAME] + self._fileDB[self._EXT]
-        else:  #all: path+name+ext
-            return self._fileDB[self._PATH] + self._fileDB[self._NAME] + self._fileDB[self._EXT]
+        if not ext and not self._fileDB[0]:
+            return ''
+        fp = ''
+        if path:
+            fp += self._fileDB[self._PATH]
+        if file:
+            fp += self._fileDB[self._NAME] + self._fileDB[self._EXT]
+        if ext:  # 'SQlite (*.s3db)'
+            fp += self.typeDB[0] + ' (*' + self.typeDB[1] + ')'
+        if not path and not file and not ext:  #all: path+name+ext
+            fp = self._fileDB[self._PATH] + self._fileDB[self._NAME] + self._fileDB[self._EXT]
+        return fp
 
     def setAPP(self):
         if getattr(sys, 'frozen', False):  # exe file
@@ -345,25 +366,29 @@ class FileSystem:
                 file = os.getcwd()  # command line >python3 app.py
         self._fileAPP = self._split_path(file)
 
-    def getCONF(self, path_only=False, file_only=False, ext_type=False):
+    def getCONF(self, path=False, file=False):
         """Returns file path (inculding filename) to config file.
 
-        config file is used to store app configuration (at this moment only
-        name of DB file when exited last time). If appropraite option is given,
+        config file is used to store app configuration: /n
+        - name of DB file when exited last time /n
+        - welcome text/n
+        If appropraite option is given,
         can return only path or only filename
         """
-        if path_only:
-            return self._fileCONF[self._PATH]
-        elif file_only:
-            return self._fileCONF[self._NAME] + self._fileCONF[self._EXT]
-        else: #all: path+name+ext
-            return self._fileCONF[self._PATH] + self._fileCONF[self._NAME] + self._fileCONF[self._EXT]
+        fp = ''
+        if path:
+            fp += self._fileCONF[self._PATH]
+        if file:
+            fp += self._fileCONF[self._NAME] + self._fileCONF[self._EXT]
+        if not path and not file:  #all: path+name+ext
+            fp = self._fileCONF[self._PATH] + self._fileCONF[self._NAME] + self._fileCONF[self._EXT]
+        return fp
 
     def writeOpt(self, op, val):
         """write new value for option
-        allowed options:
-        LastDB - last DB when app was closed
-        style - nothing yet
+        allowed options: \n
+        LastDB - last DB when app was closed \n
+        welcome - welcome text, showed when no DB opened \n
         """
         if op not in self.option:
             return 'nie ma takiej opcji'
@@ -375,16 +400,19 @@ class FileSystem:
 
     def getOpt(self,op):
         """Get value or option
-        allowed options:
-        LastDB - last DB when app was closed
-        style - nothing yet
+        allowed options: \n
+        LastDB - last DB when app was closed \n
+        welcome - welcome text, showed when no DB opened \n
         """
-        with open(self.getCONF(),'r') as file:
-            conf = json.load(file)
-        return conf[op]
+        if op in self.option:
+            with open(self.getCONF(),'r') as file:
+                conf = json.load(file)
+            return conf[op]
+        else:
+            return ""
 
-    def _touchCONF(self):
-        """Make sure the config file exists and has proper content
+    def _checkCONF(self):
+        """Make sure the config file exists and has proper content.
         Removes wrong entries, add entries if missing
         """
         ref_conf = {}
@@ -395,13 +423,16 @@ class FileSystem:
                 conf = {'new conf tbc': ''} #  empty file
         for op in self.option: # check here for known options
             if op not in conf:
-                ref_conf[op] = ''
+                ref_conf[op] = self._defaulfCONF(op)
             else:
                 ref_conf[op] = conf[op]
-                conf.pop(op)
-        if len(conf) > 0: # unknown options
+        if ref_conf != conf:
             self._repairCONF(ref_conf)
 
+    def _defaulfCONF(self, op):
+        if op == 'welcome':
+            return "Write welcome message into ./opt/conf.txt..."
+        
     def _repairCONF(self, conf: dict):
         """create new fresh conf file
         """
@@ -465,11 +496,11 @@ class TTager:
     http://rdrpostagger.sourceforge.net/
     """
     def __init__(self, tagDesc_file, tagTrans_file):
+
         #  we can have more then one word, we have list for each word
         self._gramma = [] #  gramatical description of the word
         self._lemma = [] #  lemma form of the word
         self.wrd = [] # word itself
-        self.wrd_len = 0 # number of words
         # initialize tagger
         self.tag_eng = treetaggerwrapper.TreeTagger(TAGLANG='ru')
         #  get tags description and translation
@@ -501,12 +532,12 @@ class TTager:
         self._lemma = []
         # store word for later, so we know where the gramma and lemma belongs
         self.wrd = wrd.split(' ')
-        self.wrd_len = len(self.wrd)
+        wrd_len = len(self.wrd)
         # If you have an external chunker, you can call the tagger with
         # option ``tagonly`` set to True, you should then provide a simple
         # string with one token by line (or list of strings with one token
         # by item).
-        for wrd_i in range(self.wrd_len):
+        for wrd_i in range(wrd_len):
             tag = self.tag_eng.tag_text(self.wrd[wrd_i], tagonly=True)
             # may be empty for empty word
             if not tag:

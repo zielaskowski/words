@@ -1,1 +1,1 @@
-{"LastDB": "/home/mi/Dropbox/dokumenty/ruski/slowka_last.s3db"}
+{"LastDB": "", "welcome": "Write welcome message into ./opt/conf.txt..."}

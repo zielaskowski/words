@@ -143,20 +143,20 @@ class GUIWordsCtr(QtCore.QObject):
         if event == 'init':
             self.statusbarMsg.setText('Open DB or import from TXT')
         elif event == 'saved':
-            self.statusbarMsg.setText(f'Saved DB: <i>{self._fs.getDB(file_only=True)}</i>')
+            self.statusbarMsg.setText(f'Saved DB: <i>{self._fs.getDB(file=True)}</i>')
         elif event == 'openDB':
-            self.statusbarMsg.setText(f'Opened DB: <i>{self._fs.getDB(file_only=True)}</i>')
+            self.statusbarMsg.setText(f'Opened DB: <i>{self._fs.getDB(file=True)}</i>')
         elif event == 'modDB':
-            self.statusbarMsg.setText(f'Modified DB: <i>{self._fs.getDB(file_only=True)}</i>. {self._logic.err}')
+            self.statusbarMsg.setText(f'Modified DB: <i>{self._fs.getDB(file=True)}</i>. {self._logic.err}')
         elif event == 'saved_as':
-            self.statusbarMsg.setText(f'Opened DB: <i>{self._fs.getDB(file_only=True)}</i>')
+            self.statusbarMsg.setText(f'Opened DB: <i>{self._fs.getDB(file=True)}</i>')
         elif event == 'imported':
             if self._fs.getDB():
-                self.statusbarMsg.setText(f'Imported <i>{self._fs.getIMP(file_only=True)}</i>. Added to DB <i>{self._fs.getDB(file_only=True)}</i>.')
+                self.statusbarMsg.setText(f'Imported <i>{self._fs.getIMP(file=True)}</i>. Added to DB <i>{self._fs.getDB(file=True)}</i>.')
             else:
-                self.statusbarMsg.setText(f'Imported <i>{self._fs.getIMP(file_only=True)}</i>.')
+                self.statusbarMsg.setText(f'Imported <i>{self._fs.getIMP(file=True)}</i>.')
         elif event == 'newDB':
-            self.statusbarMsg.setText(f'Created new empty DB: {self._fs.getDB(file_only=True)}')
+            self.statusbarMsg.setText(f'Created new empty DB: {self._fs.getDB(file=True)}')
         elif event == 'addROW':
             self.statusbarMsg.setText('added empty row to DB')
         elif event == 'delROW':
@@ -238,7 +238,7 @@ class GUIWordsCtr(QtCore.QObject):
     def _new_DB(self):
         file = QFileDialog.getSaveFileName(self._view, caption='Save As SQlite3 file',
                                                                 directory='',
-                                                                filter=self._fs.getDB(ext_type=True))        
+                                                                filter=self._fs.getDB(ext=True))        
         if file[0]:
             self._logic.write_sql_db(self._fs.getDB())
             self._fs.setDB(file[0])
@@ -256,7 +256,7 @@ class GUIWordsCtr(QtCore.QObject):
     def _open_DB(self):
         file = QFileDialog.getOpenFileName(self._view, caption='Choose SQlite3 file',
                                                                 directory='',
-                                                                filter=self._fs.getDB(ext_type=True))
+                                                                filter=self._fs.getDB(ext=True))
         if file[0]:
             self._fs.setDB(file[0])
         else:  # operation canceled
@@ -276,7 +276,7 @@ class GUIWordsCtr(QtCore.QObject):
     def _save_as_DB(self):
         file = QFileDialog.getSaveFileName(self._view, caption='Save As SQlite3 file',
                                                                 directory='',
-                                                                filter=self._fs.getDB(ext_type=True))        
+                                                                filter=self._fs.getDB(ext=True))        
         if file[0]:
             self._fs.setDB(file)
         else:  # operation canceled
@@ -288,7 +288,7 @@ class GUIWordsCtr(QtCore.QObject):
     def _import_TXT(self):
         file = QFileDialog.getOpenFileName(self._view, caption='Choose TXT file',
                                                                 directory='',
-                                                                filter=self._fs.getIMP(ext_type=True))
+                                                                filter=self._fs.getIMP(ext=True))
         if file[0]:
             self._fs.setIMP(file)
         else:
@@ -323,7 +323,14 @@ class GUIWordsCtr(QtCore.QObject):
         if self._logic.open_sql_db(self._fs.getDB()) != None: # return None if fail
             self.setDisplayText(self._logic.print())
             self.disp_statusbar('openDB')
-         
+        else:
+            self.setDescText()
+            self._view.tabWidget_tager.setTabVisible(0, True)
+            self._view.tabWidget_tager.setTabText(0, 'welcome')
+            wel_txt = self._fs.getOpt('welcome')
+            self._view.txt_desc_tager_1.setText(wel_txt)
+            self._view.tabWidget_desc.setCurrentIndex(0)
+
     def _exit(self):
         #TODO question if save?
         if self._fs.getDB():
@@ -384,7 +391,7 @@ class GUIWordsCtr(QtCore.QObject):
         # change name of tabs
         # we have only five tabs, should be enough, but if not, drops other words
         tabs_no = self._view.tabWidget_tager.count()
-        wrds_no = self._logic.tager.wrd_len
+        wrds_no = len(self._logic.tager.wrd)
         if wrds_no > tabs_no:
             wrds_no = tabs_no
         for tab_s in tab_source:
