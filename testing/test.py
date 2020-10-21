@@ -1,7 +1,12 @@
-from words import modules
+from gtts import gTTS
+import playsound
 
-fil = modules.FileSystem()
+file = 'C:\\Users\\212348332\\Box Sync\\docs\\!!tools\\python\\words\\opt\\word.mp3'
 
-print(fil.getOpt('LastDB'))
-print(fil.getOpt('welcome'))
 
+
+word_sound = gTTS('профе́ссия', lang='ru')
+word_sound.save(file)
+playsound.playsound(file)
+
+print()

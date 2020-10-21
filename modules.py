@@ -245,7 +245,8 @@ class FileSystem:
         self._fileCONF = ['opt', 'conf', '.txt']  # Configuration file. name is constant
         self._fileTags = ['opt', 'RU_tagset', '.txt'] #  Tags description for tagger
         self._fileTagsTrans = ['opt', 'RU_tagset_trans', '.txt'] # Tags translation to pl
-        self.option = ["LastDB", "welcome"]
+        self.option = {"LastDB": '',
+                        "welcome": "Write welcome message into ./opt/conf.txt..."}
         self.typeIMP = ['text', '.txt']
         self.typeDB = ['SQlite3', '.s3db']
         
@@ -255,7 +256,7 @@ class FileSystem:
         self._fileTags[self._PATH] = self._fileAPP[self._PATH] + self._fileTags[self._PATH] + self._PS
         self._fileTagsTrans[self._PATH] = self._fileAPP[self._PATH] + self._fileTagsTrans[self._PATH] + self._PS
         self._checkCONF()
-        self.setDB(self.getOpt('LastDB'))
+        self.setDB(self.getOpt('LastDB'), check=True)
     
     def getTags(self, path=False, file=False):
         """Returns file path (inculding filename) to Tags description file. \n
@@ -309,7 +310,7 @@ class FileSystem:
         return fp
 
     def setIMP(self, path: str):
-        self._fileIMP = self._split_path(path[0])
+        self._fileIMP = self._split_path(path)
 
     def getIMP(self, path=False, file=False, ext=False):
         if not ext and not self._fileIMP[0]:
@@ -325,19 +326,18 @@ class FileSystem:
             fp = self._fileIMP[self._PATH] + self._fileIMP[self._NAME] + self._fileIMP[self._EXT]
         return fp
 
-    def setDB(self, path: str):
+    def setDB(self, path: str, check=False):
         """set path and filename for DB. \n
-        checks if file exist
+        checks if file exist if requested, useful for reading config (lastDB)
         """
+        if check and not os.path.isfile(path):
+            # file is missing
+            self.writeOpt('LastDB','')
+            self._fileDB = ['','','']
+            return
         # override file extension. No other than s3db can be opened
         self._fileDB = self._split_path(path)
         self._fileDB[self._EXT] = self.typeDB[1]
-        try:
-            with open(self.getDB(path=True, file=True)) as f:
-                pass
-        except: # file is missing
-            self.writeOpt('LastDB','')
-            self._fileDB = ['','','']
 
     def getDB(self, path=False, file=False, ext=False):
         """ext=True: input typical for QtFileDialog: ('SQlite3 (*.s3db)') \n
@@ -416,22 +416,22 @@ class FileSystem:
         Removes wrong entries, add entries if missing
         """
         ref_conf = {}
-        with open(self.getCONF(), 'r+') as file: #  will create file if not exist
+        with open(self.getCONF(), 'a+') as file: #  will create file if not exist
             try:
+                # on WIN 'r+' is not creating new file! why??
+                # a+ is working fine, but set the cursor to eof
+                # so need to move back to the begining
+                file.seek(0)
                 conf = json.load(file)
             except:
                 conf = {'new conf tbc': ''} #  empty file
         for op in self.option: # check here for known options
             if op not in conf:
-                ref_conf[op] = self._defaulfCONF(op)
+                ref_conf[op] = self.option[op]
             else:
                 ref_conf[op] = conf[op]
         if ref_conf != conf:
             self._repairCONF(ref_conf)
-
-    def _defaulfCONF(self, op):
-        if op == 'welcome':
-            return "Write welcome message into ./opt/conf.txt..."
         
     def _repairCONF(self, conf: dict):
         """create new fresh conf file
@@ -825,7 +825,12 @@ class Wiki:
         except:
             # something is wrong:
             return 0 # fail
-        
+        # DEBUG:
+        if not hTag:
+            print("DEBUG\n")
+            print(source)
+            exit()
+
         for tag in hTag.next_siblings:
             if tag.name == h:
                 break

@@ -1,12 +1,15 @@
-from words.qt_gui.main_window import QtCore, QtGui, QtWidgets, Ui_MainWindow
-from words.qt_gui.import_window import Ui_ImportWindow
-from PyQt5.QtWidgets import QFileDialog
-from PyQt5 import QtMultimedia
-from gtts import gTTS
-from words.modules import FileSystem, Dictionary, Wiki
 import json
-import pandas as pd
+import os
 
+import pandas as pd
+import playsound
+from gtts import gTTS
+from PyQt5 import QtMultimedia
+from PyQt5.QtWidgets import QFileDialog
+
+from words.modules import Dictionary, FileSystem, Wiki
+from words.qt_gui.import_window import Ui_ImportWindow
+from words.qt_gui.main_window import QtCore, QtGui, QtWidgets, Ui_MainWindow
 
 
 class GUIWords(QtWidgets.QMainWindow, Ui_MainWindow):
@@ -29,7 +32,7 @@ class GUIImport(QtWidgets.QDialog, Ui_ImportWindow, myQTextEdit):
         self.data = imp
         super().__init__()
         self.setupUi(self)
-        # need to manually add my QTextEdit with implemented double click
+        # need to manually add myQTextEdit with implemented double click
         self.import_error_list = myQTextEdit(self.errorTab)
         self.import_error_list.setObjectName("import_error_list")
         self.verticalLayout_2.addWidget(self.import_error_list)
@@ -120,10 +123,26 @@ class GUIWordsCtr(QtCore.QObject):
         self.statusbarMsg = QtWidgets.QLabel()
         self._view.statusbar.addWidget(self.statusbarMsg)
         self.disp_statusbar('init')
+        # description tab names
+        self.tab_desc = ['tager', 'wiki', 'goog']
         # read configuration
         self._readLastDB()
-        # catch exit signal
-        self._view.installEventFilter(self)
+        # store selected txt from txt desc boxes
+        self.selTxt = ''
+        self._view.txt_desc_tager_1.setContextMenuPolicy(QtCore.Qt.ActionsContextMenu)
+        copyPL = QtWidgets.QAction("cos",self)
+        copyPL.triggered.connect(self._add)
+        self._view.txt_desc_tager_1.addAction(copyPL)
+
+    def _installDblClick(self):
+        '''Instal event handler on all txt desc boxes\n
+        This will allow to catch dblClicks and write selected txt to self.selTxt
+        '''
+        tab_source = ['tager', 'wiki', 'goog']
+        tabs_no = self._view.tabWidget_tager.count()
+        for tab_s in tab_source:
+            for tab_i in range(tabs_no):
+                exec(f'self._view.txt_desc_{tab_s}_{tab_i+1}.installEventFilter(self)')
         
     def disp_statusbar(self, event=''):
         """Display text in status bar. Possible events:\n
@@ -136,6 +155,7 @@ class GUIWordsCtr(QtCore.QObject):
         - modDB
         - addROW
         - delROW
+        - clip: txt copied to clipboard
         """
 
         # status bar is showing tooltip when hoover the menu
@@ -156,11 +176,13 @@ class GUIWordsCtr(QtCore.QObject):
             else:
                 self.statusbarMsg.setText(f'Imported <i>{self._fs.getIMP(file=True)}</i>.')
         elif event == 'newDB':
-            self.statusbarMsg.setText(f'Created new empty DB: {self._fs.getDB(file=True)}')
+            self.statusbarMsg.setText(f'Created new empty DB: <i>{self._fs.getDB(file=True)}</i>')
         elif event == 'addROW':
             self.statusbarMsg.setText('added empty row to DB')
         elif event == 'delROW':
             self.statusbarMsg.setText('deleted row from DB')
+        elif event == 'clip':
+            self.statusbarMsg.setText(f'<i>{self.selTxt}</i> copied to clipboard')
 
     def _connectSignals(self):
         # buttons
@@ -178,17 +200,38 @@ class GUIWordsCtr(QtCore.QObject):
         self._view.import_TXT.triggered.connect(self._import_TXT)
         self._view.exit.triggered.connect(self._exit)
         # text mods
+        self._view.txt_pl.editingFinished.connect(self._edit_txt)
+        self._view.txt_ru.editingFinished.connect(self._edit_txt)
         self._view.txt_pl.returnPressed.connect(self._edit_txt)
         self._view.txt_ru.returnPressed.connect(self._edit_txt)
+        # catch exit signal
+        self._view.installEventFilter(self)
+        # catch dbl click on desc txt
+        self._installDblClick()
+        # catch focus change on txt ru&pl
+        self._view.txt_pl.installEventFilter(self)
+        self._view.txt_ru.installEventFilter(self)
         
     def _edit_txt(self):
+        if self._view.focusWidget() in [self._view.txt_pl, self._view.txt_ru]:
+            # switching focus betwee pl and ru dosent finish editing
+            return
+        if not self._view.txt_pl.text() and not self._view.txt_ru.text():
+            # we lost focus but nothing entered so get rid of 'none' line in db
+            # and restore previous db line
+            row = self._logic.print(self._logic.history[self._logic.history_index])
+            self._logic.drop(row.name)
+            self.setDisplayText(self._logic.print(self._logic.history[self._logic.history_index]))
+            return
         row = self._logic.print(self._logic.history[self._logic.history_index])
-        self._logic.drop(row.name)
-        self._logic.importTXT(self._view.txt_ru.text() + '   ' + self._view.txt_pl.text())
-        self._logic.commit()
-        self._logic.write_sql_db(self._fs.getDB())
-        self.disp_statusbar('modDB')
-        self.setDisplayText(self._logic.print(self._logic.history[self._logic.history_index]))
+        if row.ru != self._view.txt_ru.text() or row.pl != self._view.txt_pl.text():
+            # something has changed
+            self._logic.drop(row.name)
+            self._logic.importTXT(self._view.txt_ru.text() + '   ' + self._view.txt_pl.text())
+            self._logic.commit()
+            self._logic.write_sql_db(self._fs.getDB())
+            self.disp_statusbar('modDB')
+            self.setDisplayText(self._logic.print(self._logic.history[self._logic.history_index]))
 
     def _print(self):
         self._view.setCursor(QtGui.QCursor(QtCore.Qt.WaitCursor))
@@ -205,12 +248,19 @@ class GUIWordsCtr(QtCore.QObject):
         self.setDisplayText(self._logic.previous())
         self._view.setCursor(QtGui.QCursor(QtCore.Qt.ArrowCursor))
     
-    def _add(self, event, wrd_ru='_', wrd_pl='_'):
-        self._logic.importTXT(wrd_ru + '    ' + wrd_pl)
+    def _add(self):
+        '''Adds empy row to DB(none   ''). Clears pl and ru txt. Pressing enter will be\n
+        catched by self._edit_txt and write to DB.\n
+        '''
+        if self.selTxt:
+            clipboard = QtWidgets.QApplication.clipboard()
+            clipboard.setText(self.selTxt)
+            self.disp_statusbar('clip')
+        self._logic.importTXT('none')
         self._logic.commit()
-        self._logic.write_sql_db(self._fs.getDB())
-        self.disp_statusbar('addROW')
-        self.setDisplayText(self._logic.print(self._logic.history[self._logic.history_index]))
+        self._view.txt_ru.setText('')
+        self._view.txt_pl.setText('')
+        self._view.txt_ru.setFocus()
 
     def _del(self):
         row = self._logic.print(self._logic.history[self._logic.history_index])
@@ -223,25 +273,27 @@ class GUIWordsCtr(QtCore.QObject):
         row = self._logic.print(self._logic.history[self._logic.history_index])
         if row.ru:
             if not repeat:
+                # win will not allow opening the file again
+                # but allows to delete...
+                try:
+                    os.remove(self._fs.getMP3())
+                except:
+                    pass
                 word_sound = gTTS(text=row.ru, lang='ru')
                 word_sound.save(self._fs.getMP3())
-            file = QtCore.QUrl.fromLocalFile(self._fs.getMP3())
-            player = QtMultimedia.QMediaPlayer(self)
-            player.setMedia(QtMultimedia.QMediaContent(file))
-            player.setVolume(50)
-            player.play()
-
-    
-        pass
+            playsound.playsound(self._fs.getMP3())
 
     # menu function
     def _new_DB(self):
         file = QFileDialog.getSaveFileName(self._view, caption='Save As SQlite3 file',
                                                                 directory='',
                                                                 filter=self._fs.getDB(ext=True))        
-        if file[0]:
+        # Qt lib returning always / as path separator
+        # we need system specific, couse we are checking for file existence
+        path = QtCore.QDir.toNativeSeparators(file[0])
+        if path:
             self._logic.write_sql_db(self._fs.getDB())
-            self._fs.setDB(file[0])
+            self._fs.setDB(path)
         else:  # operation canceled
             return
         self._view.setCursor(QtGui.QCursor(QtCore.Qt.WaitCursor))
@@ -257,8 +309,11 @@ class GUIWordsCtr(QtCore.QObject):
         file = QFileDialog.getOpenFileName(self._view, caption='Choose SQlite3 file',
                                                                 directory='',
                                                                 filter=self._fs.getDB(ext=True))
-        if file[0]:
-            self._fs.setDB(file[0])
+        # Qt lib returning always / as path separator
+        # we need system specific, couse we are checking for file existence
+        path = QtCore.QDir.toNativeSeparators(file[0])
+        if path:
+            self._fs.setDB(path)
         else:  # operation canceled
             return
         if self._logic.open_sql_db(self._fs.getDB()) != None: # return None if fail
@@ -277,8 +332,12 @@ class GUIWordsCtr(QtCore.QObject):
         file = QFileDialog.getSaveFileName(self._view, caption='Save As SQlite3 file',
                                                                 directory='',
                                                                 filter=self._fs.getDB(ext=True))        
-        if file[0]:
-            self._fs.setDB(file)
+        # Qt lib returning always / as path separator
+        # we need system specific, couse we are checking for file existence
+        path = QtCore.QDir.toNativeSeparators(file[0])
+        if path:
+            self._logic.write_sql_db(self._fs.getDB())
+            self._fs.setDB(path)
         else:  # operation canceled
             return
         self._logic.write_sql_db(self._fs.getDB())
@@ -289,12 +348,20 @@ class GUIWordsCtr(QtCore.QObject):
         file = QFileDialog.getOpenFileName(self._view, caption='Choose TXT file',
                                                                 directory='',
                                                                 filter=self._fs.getIMP(ext=True))
-        if file[0]:
-            self._fs.setIMP(file)
+        # Qt lib returning always / as path separator
+        # we need system specific, couse we are checking for file existence
+        path = QtCore.QDir.toNativeSeparators(file[0])
+        if path:
+            self._fs.setIMP(path)
         else:
             return  # operation canceled
-        with open(self._fs.getIMP(), 'r') as f:
-            file = f.readlines()
+        # there is fackup when reading files created in linux into win
+        # but it can be a more general problem when we don't know encoding
+        # so read as bytes and than decode with 'utf-8'
+        file = []
+        with open(self._fs.getIMP(), 'rb') as f:
+            for line in f.readlines():
+                file.append(line.decode('utf-8'))
         self._view.setCursor(QtGui.QCursor(QtCore.Qt.WaitCursor))
         imp = self._logic.importTXT(file)
         self._view.setCursor(QtGui.QCursor(QtCore.Qt.ArrowCursor))
@@ -319,7 +386,6 @@ class GUIWordsCtr(QtCore.QObject):
     # other helpers
 
     def _readLastDB(self):
-        self._fs.setDB(self._fs.getOpt('LastDB'))
         if self._logic.open_sql_db(self._fs.getDB()) != None: # return None if fail
             self.setDisplayText(self._logic.print())
             self.disp_statusbar('openDB')
@@ -332,24 +398,40 @@ class GUIWordsCtr(QtCore.QObject):
             self._view.tabWidget_desc.setCurrentIndex(0)
 
     def _exit(self):
-        #TODO question if save?
+        # delet MP3 file
+        try:
+            os.remove(self._fs.getMP3())
+        except:
+            pass
+        # save DB and store the name in conf file
         if self._fs.getDB():
             self._saveDB()
             self._fs.writeOpt("LastDB",self._fs.getDB())
         self._view.close()
 
     def eventFilter(self,source, event):
-        '''Catch signal:
-        
-        if user closed the window
-
-        If user resize the window
+        '''Catch signal:\n
+        - if user closed the window\n
+        - if user resize the window\n
+        - double click on desc text box
         '''
         if event.type() == QtCore.QEvent.Close:
             self._exit()
         elif event.type() == QtCore.QEvent.Resize:
             self.adjDisplaySize()
+        elif event.type() == QtCore.QEvent.MouseButtonDblClick and source.__class__ is QtWidgets.QLabel:
+            # we start timer to allow stndard handling of dbl click:
+            # that is text select
+            # after 100msec we get the text
+            QtCore.QTimer.singleShot(100,lambda: self.selectTxt(source))
+        elif event.type() == QtCore.QEvent.MouseButtonRelease and source.__class__ is QtWidgets.QLabel:
+            self.selectTxt(source)
+        elif event.type() == QtCore.QEvent.FocusOut and source in [self._view.txt_pl, self._view.txt_ru]:
+            self._edit_txt()
         return False
+
+    def selectTxt(self, source):
+        self.selTxt = source.selectedText()
 
     def setDisplayText(self, row):
         self._view.txt_ru.setText(row.ru)
@@ -386,7 +468,6 @@ class GUIWordsCtr(QtCore.QObject):
                     break
 
     def setDescText(self):
-        tab_source = ['tager', 'wiki', 'goog']
         # check how many words, unhide only tabs needed,
         # change name of tabs
         # we have only five tabs, should be enough, but if not, drops other words
@@ -394,7 +475,7 @@ class GUIWordsCtr(QtCore.QObject):
         wrds_no = len(self._logic.tager.wrd)
         if wrds_no > tabs_no:
             wrds_no = tabs_no
-        for tab_s in tab_source:
+        for tab_s in self.tab_desc:
             for tab_i in range(tabs_no): 
                 if tab_i > wrds_no - 1: #hide tabs if more than wrds
                     exec(f'self._view.tabWidget_{tab_s}.setTabVisible({tab_i}, False)')
