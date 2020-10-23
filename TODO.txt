@@ -7,7 +7,7 @@ TEST: do
 GUI: search filed
 
 GUI: zmiana ru nie zawsze odswieza wikipedie
-
+TAG: usun znaki zapytania, przecinki, wykrzykniki
 
 
 
@@ -17,6 +17,13 @@ WIKI error:
 
 
 
+po usunieciu lini:
+def readData(self, wrd_i):
+        '''read data from wiki only if wrd exist.
+        self.checkWiki must be run first
+        '''
+        if not self.wrd[wrd_i]:
+IndexError: list index out of range
 
 
 "czasownik"

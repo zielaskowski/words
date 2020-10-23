@@ -290,8 +290,8 @@
                       <rect>
                        <x>0</x>
                        <y>0</y>
-                       <width>96</width>
-                       <height>30</height>
+                       <width>371</width>
+                       <height>244</height>
                       </rect>
                      </property>
                      <property name="sizePolicy">
@@ -335,8 +335,8 @@
                       <rect>
                        <x>0</x>
                        <y>0</y>
-                       <width>96</width>
-                       <height>30</height>
+                       <width>371</width>
+                       <height>244</height>
                       </rect>
                      </property>
                      <property name="sizePolicy">
@@ -380,8 +380,8 @@
                       <rect>
                        <x>0</x>
                        <y>0</y>
-                       <width>96</width>
-                       <height>30</height>
+                       <width>371</width>
+                       <height>244</height>
                       </rect>
                      </property>
                      <property name="sizePolicy">
@@ -623,8 +623,8 @@
                       <rect>
                        <x>0</x>
                        <y>0</y>
-                       <width>371</width>
-                       <height>244</height>
+                       <width>96</width>
+                       <height>30</height>
                       </rect>
                      </property>
                      <property name="sizePolicy">
@@ -923,6 +923,9 @@
             <property name="icon">
              <iconset resource="resources.qrc">
               <normaloff>:/resources/resources/add.png</normaloff>:/resources/resources/add.png</iconset>
+            </property>
+            <property name="checkable">
+             <bool>true</bool>
             </property>
             <property name="flat">
              <bool>true</bool>

@@ -129,6 +129,7 @@ class GUIWordsCtr(QtCore.QObject):
         self._readLastDB()
         # store selected txt from txt desc boxes
         self.selTxt = ''
+
         self._view.txt_desc_tager_1.setContextMenuPolicy(QtCore.Qt.ActionsContextMenu)
         copyPL = QtWidgets.QAction("cos",self)
         copyPL.triggered.connect(self._add)
@@ -156,6 +157,7 @@ class GUIWordsCtr(QtCore.QObject):
         - addROW
         - delROW
         - clip: txt copied to clipboard
+        - noMP3: gtts failed and we don't have sound
         """
 
         # status bar is showing tooltip when hoover the menu
@@ -167,7 +169,9 @@ class GUIWordsCtr(QtCore.QObject):
         elif event == 'openDB':
             self.statusbarMsg.setText(f'Opened DB: <i>{self._fs.getDB(file=True)}</i>')
         elif event == 'modDB':
-            self.statusbarMsg.setText(f'Modified DB: <i>{self._fs.getDB(file=True)}</i>. {self._logic.err}')
+            err = self._logic.err.replace("</p>" , '')
+            err = err.replace('<p>', '')
+            self.statusbarMsg.setText(f'Modified DB: <i>{self._fs.getDB(file=True)}</i>. {err}')
         elif event == 'saved_as':
             self.statusbarMsg.setText(f'Opened DB: <i>{self._fs.getDB(file=True)}</i>')
         elif event == 'imported':
@@ -183,6 +187,8 @@ class GUIWordsCtr(QtCore.QObject):
             self.statusbarMsg.setText('deleted row from DB')
         elif event == 'clip':
             self.statusbarMsg.setText(f'<i>{self.selTxt}</i> copied to clipboard')
+        elif event == 'noMP3':
+            self.statusbarMsg.setText('no sound file')
 
     def _connectSignals(self):
         # buttons
@@ -213,54 +219,77 @@ class GUIWordsCtr(QtCore.QObject):
         self._view.txt_ru.installEventFilter(self)
         
     def _edit_txt(self):
-        if self._view.focusWidget() in [self._view.txt_pl, self._view.txt_ru]:
-            # switching focus betwee pl and ru dosent finish editing
-            return
-        if not self._view.txt_pl.text() and not self._view.txt_ru.text():
-            # we lost focus but nothing entered so get rid of 'none' line in db
-            # and restore previous db line
+        if self._view.btn_add.isChecked():
+        # we want to add row
+            if self._view.focusWidget() in [self._view.txt_pl, self._view.txt_ru]:
+                # switching focus betwee pl and ru dosent finish adding
+                return
+            # if pl nd ru changed, we end adding also if btn_add still checked
+            if self._view.txt_ru.text() and self._view.txt_pl.text():
+                self._view.btn_add.setChecked(False)
+                self._edit_txt()
+        else:
             row = self._logic.print(self._logic.history[self._logic.history_index])
-            self._logic.drop(row.name)
-            self.setDisplayText(self._logic.print(self._logic.history[self._logic.history_index]))
-            return
-        row = self._logic.print(self._logic.history[self._logic.history_index])
-        if row.ru != self._view.txt_ru.text() or row.pl != self._view.txt_pl.text():
-            # something has changed
-            self._logic.drop(row.name)
-            self._logic.importTXT(self._view.txt_ru.text() + '   ' + self._view.txt_pl.text())
-            self._logic.commit()
-            self._logic.write_sql_db(self._fs.getDB())
-            self.disp_statusbar('modDB')
-            self.setDisplayText(self._logic.print(self._logic.history[self._logic.history_index]))
+            if not self._view.txt_ru.text() and row.ru == 'none':
+                # if adding, row.ru is none
+                # if no new ru word added, get rid of none from DB
+                # and restore last db
+                self._logic.drop(row.name)
+                row = self._logic.print(self._logic.history[self._logic.history_index])
+                self.setDisplayText(row)
+                return
+            if row.ru != self._view.txt_ru.text() or row.pl != self._view.txt_pl.text():
+                # both pl and ru have changed, so we end edit and write changes
+                self._logic.drop(row.name)
+                self._logic.importTXT(self._view.txt_ru.text() + '   ' + self._view.txt_pl.text())
+                self._logic.commit()
+                self._logic.write_sql_db(self._fs.getDB())
+                self.disp_statusbar('modDB')
+                # enable all btn
+                self._view.btn_del.setDisabled(False)
+                self._view.btn_previous.setDisabled(False)
+                self._view.btn_rand.setDisabled(False)
+                self._view.btn_next.setDisabled(False)
+                # uncheck the btn_add
+                self._view.btn_add.setChecked(False)
+                # finaly, we rewrite desc text
+                # must be at end, couse trigering self._edit_txt again (loose focus)
+                self.setDisplayText(self._logic.print(self._logic.history[self._logic.history_index]))
 
-    def _print(self):
-        self._view.setCursor(QtGui.QCursor(QtCore.Qt.WaitCursor))
+    def _print(self):        
         self.setDisplayText(self._logic.print())
-        self._view.setCursor(QtGui.QCursor(QtCore.Qt.ArrowCursor))
 
     def _next(self):
-        self._view.setCursor(QtGui.QCursor(QtCore.Qt.WaitCursor))
         self.setDisplayText(self._logic.next())
-        self._view.setCursor(QtGui.QCursor(QtCore.Qt.ArrowCursor))
 
     def _prev(self):
-        self._view.setCursor(QtGui.QCursor(QtCore.Qt.WaitCursor))
         self.setDisplayText(self._logic.previous())
-        self._view.setCursor(QtGui.QCursor(QtCore.Qt.ArrowCursor))
     
     def _add(self):
-        '''Adds empy row to DB(none   ''). Clears pl and ru txt. Pressing enter will be\n
+        '''Adds empty row to DB(none   ''). Clears pl and ru txt. Pressing enter will be\n
         catched by self._edit_txt and write to DB.\n
         '''
-        if self.selTxt:
-            clipboard = QtWidgets.QApplication.clipboard()
-            clipboard.setText(self.selTxt)
-            self.disp_statusbar('clip')
-        self._logic.importTXT('none')
-        self._logic.commit()
-        self._view.txt_ru.setText('')
-        self._view.txt_pl.setText('')
-        self._view.txt_ru.setFocus()
+        if self._view.btn_add.isChecked():
+            # create new row in db
+            self._logic.importTXT('none')
+            self._logic.commit()
+            # clean GUI
+            self._view.txt_ru.setText('')
+            self._view.txt_pl.setText('')
+            self._view.txt_ru.setFocus() # will rise event, which will send to self._edit_txt
+            # dissable other btns
+            self._view.btn_del.setDisabled(True)
+            self._view.btn_previous.setDisabled(True)
+            self._view.btn_rand.setDisabled(True)
+            self._view.btn_next.setDisabled(True)
+        else: # un click
+            self._view.btn_add.setChecked(False)
+            # enable other btns
+            self._view.btn_del.setDisabled(False)
+            self._view.btn_previous.setDisabled(False)
+            self._view.btn_rand.setDisabled(False)
+            self._view.btn_next.setDisabled(False)
+            self._edit_txt()
 
     def _del(self):
         row = self._logic.print(self._logic.history[self._logic.history_index])
@@ -279,9 +308,15 @@ class GUIWordsCtr(QtCore.QObject):
                     os.remove(self._fs.getMP3())
                 except:
                     pass
-                word_sound = gTTS(text=row.ru, lang='ru')
-                word_sound.save(self._fs.getMP3())
-            playsound.playsound(self._fs.getMP3())
+                # gTTS module is not very stable
+                # has problem with tokens sometimes
+                try:
+                    word_sound = gTTS(text=row.ru, lang='ru', lang_check=False)
+                    word_sound.save(self._fs.getMP3())
+                    playsound.playsound(self._fs.getMP3())
+                except:
+                    self.disp_statusbar("noMP3")
+                
 
     # menu function
     def _new_DB(self):
@@ -386,6 +421,7 @@ class GUIWordsCtr(QtCore.QObject):
     # other helpers
 
     def _readLastDB(self):
+        self._view.setCursor(QtGui.QCursor(QtCore.Qt.WaitCursor))
         if self._logic.open_sql_db(self._fs.getDB()) != None: # return None if fail
             self.setDisplayText(self._logic.print())
             self.disp_statusbar('openDB')
@@ -396,6 +432,7 @@ class GUIWordsCtr(QtCore.QObject):
             wel_txt = self._fs.getOpt('welcome')
             self._view.txt_desc_tager_1.setText(wel_txt)
             self._view.tabWidget_desc.setCurrentIndex(0)
+        self._view.setCursor(QtGui.QCursor(QtCore.Qt.ArrowCursor))
 
     def _exit(self):
         # delet MP3 file
@@ -432,8 +469,14 @@ class GUIWordsCtr(QtCore.QObject):
 
     def selectTxt(self, source):
         self.selTxt = source.selectedText()
+        # get selected tex and copy to clipboard
+        if self.selTxt:
+            clipboard = QtWidgets.QApplication.clipboard()
+            clipboard.setText(self.selTxt)
+            self.disp_statusbar('clip')
 
     def setDisplayText(self, row):
+        self._view.setCursor(QtGui.QCursor(QtCore.Qt.WaitCursor))
         self._view.txt_ru.setText(row.ru)
         self._view.txt_pl.setText(row.pl)
         self.adjDisplaySize()
@@ -441,6 +484,7 @@ class GUIWordsCtr(QtCore.QObject):
 
         self._logic.score()
         self._play()
+        self._view.setCursor(QtGui.QCursor(QtCore.Qt.ArrowCursor))
 
     def adjDisplaySize(self):
         # resize text to fit in window

@@ -41,6 +41,10 @@ class Dictionary:
 
         or list of strings as above: result of file.readlines()
         """
+        # may happen that ru=none is left in the db
+        # we need to make sure it is deleted
+        none_i = self.db[self.db.ru == 'none'].index
+        self.db.drop(none_i, inplace=True)
         self.err = ''
         self.db_temp = self.db_temp.iloc[0:0] # reset data frame
         if type(words) == list:
@@ -793,7 +797,8 @@ class Wiki:
         data = self.data[wrd_i]
         wiki.h2.string = self.wrd[wrd_i]
         wiki.div.append(copy.copy(data['translation']))
-        wiki.div.append(copy.copy(data['declination_pl']))
+        if not data['declination_ru']:
+            wiki.div.append(copy.copy(data['declination_pl']))
         wiki.div.append(copy.copy(data['declination_ru']))
         wiki.div.append(copy.copy(data['example']))
 
