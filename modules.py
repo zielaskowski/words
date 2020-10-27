@@ -12,16 +12,15 @@ import requests
 
 
 class Dictionary:
-    """store pairs of words as pandas.DataFrame
-    
-    can add or print a pair of words
-    parse input and check if correct
-    
-    When asked for word from dic, parse it through tagger and store gramma and lemma
-    can be accessed through self.tager.formatAll()
+    """store pairs of words as pandas.DataFrame\n
+    can add or print a pair of words\n
+    parse input and check if correct\n
+    When asked for word from dic, parse it through tagger and store gramma and lemma\n
+    can be accessed through self.tager.formatAll() and self.wiki.formatAll()\n
+    Need to provide tag description file and translation file, provided by class FileSystem as getTrans()
     """
 
-    def __init__(self, tagDesc_file, tagTrans_file):
+    def __init__(self, tagDesc_file, trans_file):
         # main DB to store dictionary
         self.db = pd.DataFrame([['','',0,0]], columns=['ru', 'pl', 'try_n', 'fail_n'])
         # temp DB to store import date before commit
@@ -30,9 +29,9 @@ class Dictionary:
         self.history = [0]
         self.history_index = 0
         # need to provide location for tags description file and translation of the tags
-        self.tager = TTager(tagDesc_file, tagTrans_file)
+        self.tager = TTager(tagDesc_file, trans_file)
         # read data from wiki
-        self.wiki = Wiki()
+        self.wiki = Wiki(trans_file)
 
     def importTXT(self, words):
         """allowed input formats:
@@ -161,12 +160,13 @@ class Dictionary:
             self.history_index = len(self.history) - 1
             row = self.db.iloc[line_no]
         else:  # return selected line
+            # DEBUG
+            print(line_no, len(self.db), self.history)
             row = self.db.iloc[line_no]
         #  tag the word (or words) providing grammar and lemma
         self.tager.tag(row.ru)
         #  check if wiki page exist for the row
         self.wiki.checkWiki(self.tager._lemma)
-
 
         return row
 
@@ -203,7 +203,11 @@ class Dictionary:
             self.history_index += n
         elif deep == 0:  # we are in present
             self.history_index += 1
-            self.history.append(self.history[-1] + n)
+            new_row = self.history[-1] + n
+            # we need to check length of db
+            if new_row > len(self.db):
+                new_row = 0
+            self.history.append(new_row)
         else:  # we are not deep enough in past
             n -= deep
             self.history_index += 1
@@ -231,8 +235,9 @@ class FileSystem:
     -DB file:                    self._fileDB, access through self.getDB and self.setDB\n
     -aplication location:        self._fileAPP, access through self.getAPP\n
     -configuration file:         self._fileCONF, access to options through self.getOpt and self.writeOpt\n
-    -tagset description for tagger
-    -tagset translation to pl
+    -tagset description for tagger (./opt/RU_tagset.txt)
+    -translation to pl (./opt/trans2pl.txt)
+    -grammar explanation (./opt.gramma_expl.txt)
 
     Handles expected type of file: SQlite3, TXT used as parameter for QtFileDialog
     """
@@ -248,7 +253,8 @@ class FileSystem:
         self._fileMP3 = ['opt', 'word', '.mp3']  # name is constant, path will be taken from self._fileAPP
         self._fileCONF = ['opt', 'conf', '.txt']  # Configuration file. name is constant
         self._fileTags = ['opt', 'RU_tagset', '.txt'] #  Tags description for tagger
-        self._fileTagsTrans = ['opt', 'RU_tagset_trans', '.txt'] # Tags translation to pl
+        self._fileTrans = ['opt', 'trans2pl', '.txt'] # Tags translation to pl
+        self._fileGrammaExp = ['opt', 'gramma_expl', '.txt'] # gramatic explanation
         self.option = {"LastDB": '',
                         "welcome": "Write welcome message into ./opt/conf.txt..."}
         self.typeIMP = ['text', '.txt']
@@ -258,7 +264,8 @@ class FileSystem:
         self._fileMP3[self._PATH] = self._fileAPP[self._PATH] + self._fileMP3[self._PATH] + self._PS
         self._fileCONF[self._PATH] = self._fileAPP[self._PATH] + self._fileCONF[self._PATH] + self._PS
         self._fileTags[self._PATH] = self._fileAPP[self._PATH] + self._fileTags[self._PATH] + self._PS
-        self._fileTagsTrans[self._PATH] = self._fileAPP[self._PATH] + self._fileTagsTrans[self._PATH] + self._PS
+        self._fileTrans[self._PATH] = self._fileAPP[self._PATH] + self._fileTrans[self._PATH] + self._PS
+        self._fileGrammaExp[self._PATH] = self._fileAPP[self._PATH] + self._fileGrammaExp[self._PATH] + self._PS
         self._checkCONF()
         self.setDB(self.getOpt('LastDB'), check=True)
     
@@ -278,21 +285,37 @@ class FileSystem:
             fp = self._fileTags[self._PATH] + self._fileTags[self._NAME] + self._fileTags[self._EXT]
         return fp
 
-    def getTagsTrans(self, path=False, file=False):
-        """Returns file path (inculding filename) to Tags translation file
+    def getTrans(self, path=False, file=False):
+        """Returns file path (inculding filename) to translation file
 
         Tags description are in EN, file contain translation to PL
         TODO: in case file is missing download from gitHUB
         """
-        if not self._fileTagsTrans[0]:
+        if not self._fileTrans[0]:
             return ''
         fp = ''
         if path:
-            fp += self._fileTagsTrans[self._PATH]
+            fp += self._fileTrans[self._PATH]
         if file:
-            fp += self._fileTagsTrans[self._NAME] + self._fileTagsTrans[self._EXT]
+            fp += self._fileTrans[self._NAME] + self._fileTrans[self._EXT]
         if not path and not file:  #all: path+name+ext
-            fp = self._fileTagsTrans[self._PATH] + self._fileTagsTrans[self._NAME] + self._fileTagsTrans[self._EXT]
+            fp = self._fileTrans[self._PATH] + self._fileTrans[self._NAME] + self._fileTrans[self._EXT]
+        return fp
+
+    def getGrammaExp(self, path=False, file=False):
+        """Returns file path (inculding filename) to gramma explanation file
+
+        file contain explanation of gramma abrevations and some usefull info in PL
+        """
+        if not self._fileGrammaExp[0]:
+            return ''
+        fp = ''
+        if path:
+            fp += self._fileGrammaExp[self._PATH]
+        if file:
+            fp += self._fileGrammaExp[self._NAME] + self._fileGrammaExp[self._EXT]
+        if not path and not file:  #all: path+name+ext
+            fp = self._fileGrammaExp[self._PATH] + self._fileGrammaExp[self._NAME] + self._fileGrammaExp[self._EXT]
         return fp
 
     def getMP3(self, path=False, file=False):
@@ -521,10 +544,13 @@ class TTager:
         tagset.replace('-', pd.NA, inplace=True)
         return(tagset)
 
-    def _readTagsTrans(self, file):    
+    def _readTagsTrans(self, file=''):    
         # read tagset translation
-        tagset_trans = pd.read_csv(file, sep='\t', names=["ru","pl","del"])
-        tagset_trans = tagset_trans.iloc[:,0:2] # in case some tabs on end of the line
+        tagset_trans = ''
+        if file:
+            tagset_trans = pd.read_csv(file, sep='\t+', names=["ru","pl","del"],
+                                        comment='#', engine='python')
+            tagset_trans = tagset_trans.iloc[:,0:2] # in case some tabs on end of the line
         return(tagset_trans)
 
     def tag(self, wrd):
@@ -586,7 +612,8 @@ class Wiki:
     ''' extracts interesting info from wiki dictionary
         need to handle accent in words (need to be removed)
     '''
-    def __init__(self):
+    transFile = ''
+    def __init__(self, transFile=''):
         self._url = {'ru': "https://ru.wiktionary.org/wiki/",
                      'pl': "https://pl.wiktionary.org/wiki/"}
         self._html_it = {'pl': '',
@@ -598,7 +625,19 @@ class Wiki:
                      'declination_ru': ''} # extracted data from HTML will be here (raw HTML) 
         self.data = [] #  data{} for each word put to list
         self.wrd = []
-        
+        if not self.transFile:
+            self.transFile = transFile
+            self.trans = self._readTrans(transFile)
+    
+    def _readTrans(self, file=''):    
+        # read translation
+        trans = ''
+        if file:
+            trans = pd.read_csv(file, sep='\t+', names=["ru","pl","del"],
+                                comment='#', engine='python')
+            trans = trans.iloc[:,0:2] # in case some tabs on end of the line
+        return trans
+
     def readData(self, wrd_i):
         '''read data from wiki only if wrd exist.
         self.checkWiki must be run first
@@ -678,17 +717,45 @@ class Wiki:
             aTag.unwrap()
         
         # if nothing found, set empty str
-        if trans.text == 'znaczenia':
+        if trans.text == 'znaczenia\n':
             trans = ''
         
         self.data[wrd_i]['translation'] = copy.copy(trans)
 
-    def _extractDeclination(self, wrd_i):
+    def _prettyDeclination_ru(self, wrd_i):
         '''Take declination from ru and pl
         take which avilable or merge.
         If not a table, create a table, translate russian case
         '''
-        pass
+        decli = self.data[wrd_i]['declination_ru']
+        for tag in decli.find_all(bgcolor=re.compile('#eef9ff', re.I)):
+            # change bkg color
+            tag['bgcolor'] = '#a6a68c'
+            # from unknown reason br tags are broken and prevent finding string
+            for brTag in tag.find_all('br'):
+                brTag.decompose()
+            tag.smooth()
+            # translate to PL
+            txt = tag.string
+            # DEBUG
+            print(txt)
+            if txt:
+                txt = txt.strip()
+                txt = txt.replace('\n', '')
+                txt = txt.replace('\xa0',' ')
+                txt = pd.DataFrame([txt])
+                txt.replace(to_replace=self.trans.ru.to_list(),
+                            value=self.trans.pl.to_list(),
+                            inplace=True)
+                txt = txt.iloc[0,0]
+                # add href tag with empty link
+                nTag = decli.new_tag("a", href=txt)
+                # black text
+                nTagSpan = decli.new_tag('span', style="color:#000000")
+                nTagSpan.string = txt
+                nTag.append(nTagSpan)
+                tag.string = ''
+                tag.append(nTag)
 
     def _extractDeclination_pl(self, wrd_i):
         decli = bs("<div><h3>odmiana</h3></div>",'lxml')
@@ -735,10 +802,20 @@ class Wiki:
             supTag.decompose()
 
         # if nothing found, set empty str
-        if decli.text == 'odmiana':
-            decli = ''
-
-        self.data[wrd_i]['declination_ru'] = copy.copy(decli)
+        if decli.text in ['odmiana', 'odmiana\n']:
+            self.data[wrd_i]['declination_ru'] = ''
+        else:
+            # # DEBUG:
+            # with open('./words/opt/wiki_trans.txt','a+') as f:
+            #     for tag in decli.find_all(bgcolor=re.compile('#eef9ff', re.I)):
+            #         f.writelines(tag.text)
+            #     f.seek(0)
+            #     wiki_ru = list(set(f.readlines()))
+            # with open('./words/opt/wiki_trans.txt','w+') as f:
+            #     f.writelines(wiki_ru)
+                    
+            self.data[wrd_i]['declination_ru'] = copy.copy(decli)
+            self._prettyDeclination_ru(wrd_i)
 
     def _extractExample(self, wrd_i):
         exa = bs("<div><h3>przykłady</h3></div>",'lxml')
@@ -770,6 +847,10 @@ class Wiki:
         for wrd_n in wrd:
             if self._removeAcc(wrd_n) in self.wrd:
                 return
+        # temporary we can add 'none" to dictionary
+        # dosent make sense to look for it, also becouse destroy previous data
+        if wrd == ['none']:
+            return
         #  reset old data, start search again
         self.__init__()
         wiki_resp_ru = 0
@@ -834,7 +915,8 @@ class Wiki:
         if not hTag:
             print("DEBUG\n")
             print(source)
-            exit()
+            self._html[wrd_i][lang] = ''
+            return 0 # fail
 
         for tag in hTag.next_siblings:
             if tag.name == h:

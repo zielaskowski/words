@@ -1,5 +1,6 @@
 <RCC>
   <qresource prefix="resources">
+    <file>resources/search.jpeg</file>
     <file>resources/add.png</file>
     <file>resources/delete-512.png</file>
     <file>resources/prev.png</file>

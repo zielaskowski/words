@@ -12,6 +12,23 @@ from words.qt_gui.import_window import Ui_ImportWindow
 from words.qt_gui.main_window import QtCore, QtGui, QtWidgets, Ui_MainWindow
 
 
+class validSearchClass(QtGui.QValidator):
+    def __init__(self, wrds, parent):
+        QtGui.QValidator.__init__(self, parent)
+        self.validWords = wrds
+
+    def validate(self, wrd, index):
+        if wrd in self.validWords:
+            state = QtGui.QValidator.Acceplable
+        elif any([i.startswith(wrd) for i in self.validWords]):
+            state =  QtGui.QValidator.Intermediate
+        else:
+            state = QtGui.QValidator.Invalid
+        return (state, wrd, index)
+    
+    def fixup(self, wrd):
+        pass
+
 class GUIWords(QtWidgets.QMainWindow, Ui_MainWindow):
     def __init__(self):
         super().__init__()
@@ -117,7 +134,7 @@ class GUIWordsCtr(QtCore.QObject):
         super().__init__(view)
         self._view = view
         self._fs = FileSystem()
-        self._logic = Dictionary(self._fs.getTags(), self._fs.getTagsTrans())
+        self._logic = Dictionary(self._fs.getTags(), self._fs.getTrans())
         self._connectSignals()
         # add normal text to statusbar
         self.statusbarMsg = QtWidgets.QLabel()
@@ -129,7 +146,12 @@ class GUIWordsCtr(QtCore.QObject):
         self._readLastDB()
         # store selected txt from txt desc boxes
         self.selTxt = ''
-
+        # read toolTips text
+        file = self._fs.getGrammaExp()
+        if file:
+            self.toolTipTxt = pd.read_csv(file, sep='\t+', names=["abr","exp","del"],
+                                         comment='#', engine='python')
+            self.toolTipTxt = self.toolTipTxt.iloc[:,0:2] # in case some tabs on end of the line
         self._view.txt_desc_tager_1.setContextMenuPolicy(QtCore.Qt.ActionsContextMenu)
         copyPL = QtWidgets.QAction("cos",self)
         copyPL.triggered.connect(self._add)
@@ -208,17 +230,46 @@ class GUIWordsCtr(QtCore.QObject):
         # text mods
         self._view.txt_pl.editingFinished.connect(self._edit_txt)
         self._view.txt_ru.editingFinished.connect(self._edit_txt)
-        self._view.txt_pl.returnPressed.connect(self._edit_txt)
-        self._view.txt_ru.returnPressed.connect(self._edit_txt)
         # catch exit signal
         self._view.installEventFilter(self)
         # catch dbl click on desc txt
         self._installDblClick()
-        # catch focus change on txt ru&pl
-        self._view.txt_pl.installEventFilter(self)
-        self._view.txt_ru.installEventFilter(self)
-        
+        # catch link hoovered on description boxes
+        tab_source = ['tager', 'wiki', 'goog']
+        tabs_no = self._view.tabWidget_tager.count()
+        for tab_s in tab_source:
+            for tab_i in range(tabs_no):
+                exec(f'self._view.txt_desc_{tab_s}_{tab_i+1}.linkHovered.connect(self.toolTip)')
+        # search box
+        self._view.search.editingFinished.connect(self.found)
+        self._view.search.installEventFilter(self)
+
+    def found(self):
+        txt = self._view.search.text()
+        row = self._logic.db.pl.loc[self._logic.db.pl == txt]
+        if not row:
+            row = self._logic.db.ru.loc[self._logic.db.ru == txt]
+        self.setDisplayText(self._logic.print(line_no=row.index))
+    
+    def fillCompleter(self):
+        words = self._logic.db.ru.to_list()
+        words += self._logic.db.pl.to_list()
+        completer = QtWidgets.QCompleter(words)
+        self._view.search.setCompleter(completer)
+        self.validSearch = validSearchClass(words, self)
+        self._view.search.setValidator(self.validSearch)
+
+    def toolTip(self, href):
+        exp = self.toolTipTxt.exp[self.toolTipTxt.abr == href]
+        if exp.empty:
+            exp = ''
+        else:
+            exp = '<div style=\"width: 300px;\">' + exp.iloc[0] + '</div>'
+        QtWidgets.QToolTip.showText(QtGui.QCursor.pos(), exp)
+
     def _edit_txt(self):
+        # DEBUG
+        print('_edit_txt')
         if self._view.btn_add.isChecked():
         # we want to add row
             if self._view.focusWidget() in [self._view.txt_pl, self._view.txt_ru]:
@@ -231,7 +282,7 @@ class GUIWordsCtr(QtCore.QObject):
         else:
             row = self._logic.print(self._logic.history[self._logic.history_index])
             if not self._view.txt_ru.text() and row.ru == 'none':
-                # if adding, row.ru is none
+                # if finished adding and row.ru is none
                 # if no new ru word added, get rid of none from DB
                 # and restore last db
                 self._logic.drop(row.name)
@@ -313,10 +364,11 @@ class GUIWordsCtr(QtCore.QObject):
                 try:
                     word_sound = gTTS(text=row.ru, lang='ru', lang_check=False)
                     word_sound.save(self._fs.getMP3())
-                    playsound.playsound(self._fs.getMP3())
                 except:
+                    self._view.setCursor(QtGui.QCursor(QtCore.Qt.ArrowCursor))
                     self.disp_statusbar("noMP3")
-                
+            playsound.playsound(self._fs.getMP3())
+
 
     # menu function
     def _new_DB(self):
@@ -332,7 +384,7 @@ class GUIWordsCtr(QtCore.QObject):
         else:  # operation canceled
             return
         self._view.setCursor(QtGui.QCursor(QtCore.Qt.WaitCursor))
-        self._logic = Dictionary(self._fs.getTags(), self._fs.getTagsTrans())  # drops DB, create new instance
+        self._logic = Dictionary(self._fs.getTags(), self._fs.getTrans())  # drops DB, create new instance
         self._logic.write_sql_db(self._fs.getDB())
         #self._logic.open_sql_db(self._fs.getDB())
         self.setDisplayText(self._logic.print())
@@ -463,8 +515,9 @@ class GUIWordsCtr(QtCore.QObject):
             QtCore.QTimer.singleShot(100,lambda: self.selectTxt(source))
         elif event.type() == QtCore.QEvent.MouseButtonRelease and source.__class__ is QtWidgets.QLabel:
             self.selectTxt(source)
-        elif event.type() == QtCore.QEvent.FocusOut and source in [self._view.txt_pl, self._view.txt_ru]:
-            self._edit_txt()
+        elif event.type() == QtCore.QEvent.FocusIn and source is self._view.search:
+            self.fillCompleter()
+            print('focus in')
         return False
 
     def selectTxt(self, source):

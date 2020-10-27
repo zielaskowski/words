@@ -4,7 +4,7 @@ from .. import modules
 
 
 lang='pl'
-res = requests.get('https://pl.wiktionary.org/wiki/в')
+res = requests.get('https://pl.wiktionary.org/wiki/Содержание')
 #в последнее время
 if lang == 'pl':
     h = 'h2'
@@ -87,7 +87,7 @@ print(exa.prettify())
 
 
 lang='ru'
-res = requests.get('https://ru.wiktionary.org/wiki/надо')
+res = requests.get('https://ru.wiktionary.org/wiki/Содержание')
 
 if lang == 'pl':
     h = 'h2'
