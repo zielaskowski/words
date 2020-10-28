@@ -1,0 +1,112 @@
+# file with translations used by tagger and wiki
+# words are separated by one or more tabs '\t+'
+# tab at the end of line will be ignored
+Animate	            Animate	
+no	                no	
+yes	                yes	
+Aspect	            Aspect	
+perfective	        perfective	
+progressive	        progressive	
+CATEGORY	        Część mowy	
+Adjective	        przymiotnik	
+Conjunction	        spójnik	
+Interjection	    wykrzyknik	
+Numeral	            liczebnik	
+Noun	            Rzeczownik	
+Pronoun	            Zaimek
+Particle	        imiesłów	
+Adverb	            przysłówek	
+Adposition	        przyimek	
+Verb	            czasownik	
+Case	            Przypadek	
+accusative	        biernik
+dative	            dative	
+genitive	        genitive	
+instrumental	    narzędnik	
+locative	        locative	
+nominative	        mianownik	
+vocative	        vocative	
+*n	                *n	
+Case2	            Case2	
+Coord_Type	        Coord_Type	
+Definiteness	    określoność	
+full-art	        pełny przedimek	
+short-art	        krótki przedimek	
+Degree	            stopień	
+comparative	        wyższy	
+positive	        równy	
+superlative	        naj wyższy	
+Form	            Form	
+Formation	        Formation	
+Gender	            rodzaj	
+feminine	        żeński
+masculine	        męski	
+neuter	            nijaki	
+common	            pospolity	
+Number	            Liczba
+singular	        pojedyńcza
+plural	            mnoga	
+Person	            Osoba	
+first	            pierwsza
+second	            druga	
+third	            trzecia	
+Sub_Type	        Sub_Type	
+Syntactic_Type	    Syntactic_Type	
+Tense	            Czas	
+future	            przyszły
+present	            teraźniejszy
+past	            przeszły
+Type	            Typ	
+qualificative	    relacyjny	
+cardinal	        cardinal	
+ordinal	            ordinal	
+*p	                *p	
+common	            pospolity	
+proper	            proper	
+p	                p	
+main	            main	
+VForm	            VForm	
+gerund	            gerund	
+indicative	        indicative	
+imperative	        imperative	
+infinitive	        infinitive	
+participle	        participle	
+Voice	            Voice	
+active	            active	
+medial	            medial	
+passive	            passive	
+Я					Ja
+Ты					Ty
+ОнОнаОно			On Ona Ono
+Мы					My
+Вы					Wy
+Они					Oni
+Пр. действ. прош.	im. przym. czynny prze.
+Деепр. прош.		im. przys. prze.
+Пр. страд. прош.	im. przym. bierny prze.
+Пр. действ. наст.	im. przym. czynny tera.
+Деепр. наст.		im. przys. tera.
+Пр. страд. наст.	im. przym. bierny tera.
+будущ.				czas przyszły
+Будущее				czas przyszły
+прош.				czas przeszły
+наст.				czas teraźniejszy
+повелит.			tryb rozkazujący
+падеж				przypadek
+Им.					mianownik
+Р.					dopełniacz
+Д.					celownik
+В.					biernik
+Тв.					narzędnik
+Пр.					miejscownik
+ед. ч.				liczba pojedyńcza
+мн. ч.				liczba mnoga
+Рд.					dopełniacz
+Дт.					celownik
+Вн.					biernik
+одуш.				ożywiony
+неод.				nieożywiony
+Кратк. форма		skrót
+муж. р.				męski
+ср. р.				nijaki
+жен. р.				żeński
