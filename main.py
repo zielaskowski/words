@@ -15,9 +15,11 @@ using Gstreamer, you need (linux only):
 - cairo-devel pkg-config python3-devel gcc gobject-introspection-devel libgirepository1.0-dev
 """
 
+
 import sys
 from gui import GUIWords, GUIWordsCtr
 from PyQt5.QtWidgets import QApplication
+
 
 app = QApplication([])
 view = GUIWords()

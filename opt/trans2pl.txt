@@ -4,9 +4,9 @@
 Animate	            Animate	
 no	                no	
 yes	                yes	
-Aspect	            Aspect	
-perfective	        perfective	
-progressive	        progressive	
+Aspect	            Aspekt	
+perfective	        dokonany	
+progressive	        niedokonany	
 CATEGORY	        Część mowy	
 Adjective	        przymiotnik	
 Conjunction	        spójnik	

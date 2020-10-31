@@ -5,8 +5,8 @@ im. przym. czynny tera.	<b>Imiesłów przymiotnikowy czynny czasu teraźniejszeg
 im. przys. tera.	<b>Imiesłów przysłówkowy wspólczesny<b>: bezosobowa forma czasownika wyrażająca czynność trwającą równocześnie z inną czynnością.<p>zmywać - > zmywając</p><p>czytać -> czytając</p>
 im. przym. bierny tera.	<b>Imiesłów przymiotnikowy bierny czasu teraźniejszego</b>: nieosobowa forma czasowników niedokonanych dnosząca się do przedmiotu czynności. W języku polskim forma czasu teraźniejszego i przeszłego jest identyczna.<p>pisać -> pisany</p>
 mianownik	<b>kto? co?</b><p>dom, mama, drzewo</p>
-dopełniacz	<b>kogo? co?</b><p>domu, mamy, drzewa</p>
+dopełniacz	<b>kogo? co? (nie ma)</b><p>domu, mamy, drzewa</p>
 celownik	<b>komu? czemu?</b><p>domu, mamie, drzewu</p>
-biernik		<b>kogo? co?</b><p>dom, mamę, drzewo</p>
+biernik		<b>kogo? co? (widzę)</b><p>dom, mamę, drzewo</p>
 narzędnik	<b>(z)kim? (z)czym?</b><p>domem, mamą, drzewem</p>
 miejscownik	<b>o kim? o czym?</b><p>domu, mamie, drzewie</p>
