@@ -37,7 +37,6 @@ class Dictionary:
         self.wiki = Wiki(trans_file)
         self.googl = Googl()
 
-    @debug
     def importTXT(self, words):
         """allowed input formats:
 
@@ -88,7 +87,6 @@ class Dictionary:
             self.err = '<p>No errors</p>'
         return self.db_temp
 
-    @debug
     def commit(self):
         self.db = self.db.append(self.db_temp, ignore_index=True)
         self.db.drop_duplicates(inplace=True)
@@ -101,7 +99,6 @@ class Dictionary:
             self.history.append(len(self.db) - 1)
             self.history_index = len(self.history) - 1
 
-    @debug
     def __add_str__(self, words):
         line = self.__parse_str__(words)
         if line:
@@ -110,7 +107,6 @@ class Dictionary:
             self.db_temp = self.db_temp.append(line_s, ignore_index=True)
             self.db_temp.drop_duplicates(inplace=True)
 
-    @debug
     def __parse_str__(self, line):
         '''split ru word from pl word
         it's allowed to have only ru word (without translation)
@@ -150,7 +146,6 @@ class Dictionary:
         words = [w.replace('_', ' ') for w in words]  # don't need underscore anymore
         return words
 
-    @debug
     def print(self, line_no=-1) -> pd.Series:
         """return row from DB
 
@@ -171,12 +166,16 @@ class Dictionary:
             self.history.append(line_no)
             self.history_index = len(self.history) - 1
             row = self.db.iloc[line_no]
+            # DEBUG
+            print('mid_hits: ', mid_hits, '  try_n: ', self.db.iloc[line_no,2])
         else:  # return selected line
             # DEBUG
-            print(line_no, len(self.db), self.history)
+            print(line_no, self.history)
+            if line_no > len(self.db):
+                line_no = len(self.db)
             row = self.db.iloc[line_no]
             if self.history[self.history_index] != line_no:
-                #  when we ask informatively only, do not change the history
+                #  when we ask informatively only (about current index), do not change the history
                 #  if we jump to new line, update history
                 self.history.append(line_no)
                 self.history_index = len(self.history) - 1
@@ -187,19 +186,16 @@ class Dictionary:
         self.googl.translate(row.ru, self.tager._lemma)
         return row
 
-    @debug
     def score(self, fail_no=0):
         self.db.iloc[self.history[self.history_index], 2] += 1
         self.db.iloc[self.history[self.history_index], 3] += fail_no
 
-    @debug
     def write_sql_db(self, file):
         if os.path.isfile(file):
             os.remove(file)
         db_file = sqlite3.connect(file)
         self.db.to_sql('dic', db_file, if_exists='replace', index=False)
 
-    @debug
     def open_sql_db(self, file):
         try:
             db_file = sqlite3.connect(file)
@@ -211,14 +207,12 @@ class Dictionary:
         except:
             return None
 
-    @debug
     def previous(self, n=1):
         self.history_index -= n
         if self.history_index < 0:
             self.history_index = 0
         return self.print(self.history[self.history_index])
 
-    @debug
     def next(self, n=1):
         deep = len(self.history) - self.history_index - 1  # how deep we are in history?
         if deep >= n:  # we are in past and we stay in past
@@ -236,7 +230,6 @@ class Dictionary:
             self.history.append(self.history[-1] + n)
         return self.print(self.history[self.history_index])
 
-    @debug
     def drop(self, row_no):
         self.db.drop(self.db.index[row_no], inplace=True)
         self.db.reset_index(inplace=True, drop=True)
@@ -416,7 +409,6 @@ class FileSystem:
                 file = os.getcwd()  # command line >python3 app.py
         self._fileAPP = self._split_path(file)
 
-    @debug
     def getCONF(self, path=False, file=False):
         """Returns file path (inculding filename) to config file.
 
@@ -435,7 +427,6 @@ class FileSystem:
             fp = self._fileCONF[self._PATH] + self._fileCONF[self._NAME] + self._fileCONF[self._EXT]
         return fp
 
-    @debug
     def writeOpt(self, op, val):
         """write new value for option
         allowed options: \n
@@ -450,7 +441,6 @@ class FileSystem:
         with open(self.getCONF(), 'w') as file:
             json.dump(conf, file)
 
-    @debug
     def getOpt(self, op):
         """Get value or option
         allowed options: \n
@@ -464,7 +454,6 @@ class FileSystem:
         else:
             return ""
 
-    @debug
     def _checkCONF(self):
         """Make sure the config file exists and has proper content.
         Removes wrong entries, add entries if missing
@@ -487,14 +476,12 @@ class FileSystem:
         if ref_conf != conf:
             self._repairCONF(ref_conf)
 
-    @debug
     def _repairCONF(self, conf: dict):
         """create new fresh conf file
         """
         with open(self.getCONF(), 'w') as file:
             json.dump(conf, file)
 
-    @debug
     def _split_path(self, file):
         """split the string by path separator. Last list item is name.
         What is left is the path. Than name is split by dot, giving extension
@@ -515,7 +502,6 @@ class FileSystem:
         ext = '.' + ext
         return [path, name, ext]
 
-    @debug
     def list2str(self, li, sep=''):
         str = ''
         for i in li:
@@ -564,7 +550,6 @@ class TTager:
         self.tagDesc = self._readTags(tagDesc_file)
         self.tagTrans = self._readTagsTrans(tagTrans_file)
 
-    @debug
     def _readTags(self, file):
         # read tagset file (description of tags)
         tagset = pd.read_csv(file, sep='\t')
@@ -575,7 +560,6 @@ class TTager:
         tagset.replace('-', pd.NA, inplace=True)
         return (tagset)
 
-    @debug
     def _readTagsTrans(self, file=''):
         # read tagset translation
         tagset_trans = ''
@@ -585,7 +569,6 @@ class TTager:
             tagset_trans = tagset_trans.iloc[:, 0:2]  # in case some tabs on end of the line
         return (tagset_trans)
 
-    @debug
     def tag(self, wrd):
         #  avoid repetition
         if wrd.split(' ') == self.wrd:
@@ -609,7 +592,6 @@ class TTager:
             self._gramma.append(self._grammaDesc(tag[1]))
             self._lemma.append(tag[2])
 
-    @debug
     def _grammaDesc(self, gramma_code):
         # find tag identifier in tags description
         gramma_trans = self.tagDesc[self.tagDesc.MSD == gramma_code]
@@ -630,7 +612,6 @@ class TTager:
                              inplace=True)
         return gramma_trans
 
-    @debug
     def formatAll(self, wrd_i):
         gram_desc_str = ""
         # change df to str and nice format
@@ -665,7 +646,6 @@ class Wiki:
             self.transFile = transFile
             self.trans = self._readTrans(transFile)
 
-    @debug
     def _readTrans(self, file=''):
         # read translation
         trans = ''
@@ -675,7 +655,6 @@ class Wiki:
             trans = trans.iloc[:, 0:2]  # in case some tabs on end of the line
         return trans
 
-    @debug
     def readData(self, wrd_i):
         '''read data from wiki only if wrd exist.
         self.checkWiki must be run first
@@ -708,7 +687,6 @@ class Wiki:
 
         return self.formatAll(wrd_i)
 
-    @debug
     def _removeAcc(self, wrd):
         '''remove accent symbols
         conv to lowercase
@@ -720,7 +698,6 @@ class Wiki:
                 newWrd += str
         return newWrd.lower()
 
-    @debug
     def _makeList(self, rngs):
         lst = []
         for rng in rngs.split(','):
@@ -732,7 +709,6 @@ class Wiki:
                 lst.append(x[0])
         return lst
 
-    @debug
     def _extractTranslation(self, wrd_i):
         trans = bs("<div><h3>znaczenia</h3></div>", 'lxml')
         html = self._html[wrd_i]['pl']
@@ -763,7 +739,6 @@ class Wiki:
 
         self.data[wrd_i]['translation'] = copy.copy(trans)
 
-    @debug
     def _prettyDeclination_ru(self, wrd_i):
         '''Take declination from ru and pl
         take which avilable or merge.
@@ -806,7 +781,6 @@ class Wiki:
             tag.string = ''
             tag.append(nTag)
 
-    @debug
     def _extractDeclination_pl(self, wrd_i):
         decli = bs("<div><h3>odmiana</h3></div>", 'lxml')
         html = self._html[wrd_i]['pl']
@@ -828,7 +802,6 @@ class Wiki:
 
         self.data[wrd_i]['declination_pl'] = copy.copy(decli)
 
-    @debug
     def _extractDeclination_ru(self, wrd_i):
         decli = bs("<div><h3>odmiana</h3></div>", 'lxml')
         html = self._html[wrd_i]['ru']
@@ -868,7 +841,6 @@ class Wiki:
             self.data[wrd_i]['declination_ru'] = copy.copy(decli)
             self._prettyDeclination_ru(wrd_i)
 
-    @debug
     def _extractExample(self, wrd_i):
         exa = bs("<div><h3>przykłady</h3></div>", 'lxml')
         html = self._html[wrd_i]['pl']
@@ -889,7 +861,6 @@ class Wiki:
             exa = ''
         self.data[wrd_i]['example'] = copy.copy(exa)
 
-    @debug
     def checkWiki(self, wrd, lang=['pl', 'ru']):
         ''' check if page exist (ask for HEAD only without downloading whole page)
         it requires for ANY of wiki exist (pl or ru). Still can happen that
@@ -926,7 +897,6 @@ class Wiki:
             else:
                 self.wrd.append('')
 
-    @debug
     def formatAll(self, wrd_i):
         wiki = bs("<div><h2></h2></div>", 'lxml')
         data = self.data[wrd_i]
@@ -939,7 +909,6 @@ class Wiki:
 
         return wiki.prettify()
 
-    @debug
     def wikiContent(self, lang, wrd_i):
         '''Find only content (removing menus etc.)
         Aditionally, the word can be in more than one lang, so need to find ru part of wiki

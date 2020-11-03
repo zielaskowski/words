@@ -8,3 +8,7 @@ TEST: do
 
 wiki problems:
 - odmiana: даже nawet
+
+import problem:
+переворачивать  przewracać, odmieniać
+less or more than two words

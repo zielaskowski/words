@@ -23,7 +23,6 @@ class validSearchClass(QtGui.QValidator):
             state = QtGui.QValidator.Intermediate
         else:
             state = QtGui.QValidator.Invalid
-        print(state, '  ', wrd)
         return state, wrd, index
 
     def fixup(self, wrd):
@@ -104,7 +103,7 @@ class GUIImport(QtWidgets.QDialog, Ui_ImportWindow, myQTextEdit):
         if not rows:  # nothing to import
             self.import_status_table.setColumnCount(1)
             self.import_status_table.setRowCount(1)
-            self.import_status_table.setHorizontalHeaderLabels('info')
+            self.import_status_table.setHorizontalHeaderLabels(['info'])
             col = self.import_status_table.horizontalHeader()
             col.setSectionResizeMode(QtWidgets.QHeaderView.Stretch)
             cell = QtWidgets.QTableWidgetItem('Nothing to import. See "error" tab')
@@ -321,6 +320,7 @@ class GUIWordsCtr(QtCore.QObject):
         words = self._logic.db.ru.to_list()
         words += self._logic.db.pl.to_list()
         completer = QtWidgets.QCompleter(words)
+        completer.setCaseSensitivity(False)
         self._view.search.setCompleter(completer)
         validSearch = validSearchClass(words, self)
         self._view.search.setValidator(validSearch)
@@ -366,7 +366,7 @@ class GUIWordsCtr(QtCore.QObject):
             if row.ru != self._view.txt_ru.text() or row.pl != self._view.txt_pl.text():
                 # both pl and ru have changed, so we end edit and write changes
                 self._logic.drop(row.name)
-                self._logic.importTXT(self._view.txt_ru.text() + '   ' + self._view.txt_pl.text())
+                self._logic.importTXT(self._view.txt_ru.text() + '\t   ' + self._view.txt_pl.text())
                 self._logic.commit()
                 self._logic.write_sql_db(self._fs.getDB())
                 self.disp_statusbar('modDB')
