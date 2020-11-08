@@ -568,7 +568,7 @@ class TTager:
         tagset_trans = ''
         if file:
             tagset_trans = pd.read_csv(file, sep='\t+', names=["ru", "pl", "del"],
-                                       comment='#', engine='python')
+                                       comment='#', engine='python',encoding='utf-8')
             tagset_trans = tagset_trans.iloc[:, 0:2]  # in case some tabs on end of the line
         return (tagset_trans)
 
@@ -654,7 +654,7 @@ class Wiki:
         trans = ''
         if file:
             trans = pd.read_csv(file, sep='\t+', names=["ru", "pl", "del"],
-                                comment='#', engine='python')
+                                comment='#', engine='python', encoding='utf-8')
             trans = trans.iloc[:, 0:2]  # in case some tabs on end of the line
         return trans
 
@@ -871,9 +871,12 @@ class Wiki:
         return null. check self.wrd if success, or '' if fail
         """
         # to avoid repetition
-        for wrd_n in wrd:
-            if self._removeAcc(wrd_n) in self.wrd:
-                return
+        wrd = [self._removeAcc(wrd_n) for wrd_n in wrd]
+        if wrd == self.wrd:
+            return
+        # for wrd_n in wrd:
+        #     if self._removeAcc(wrd_n) in self.wrd:
+        #         return
         # temporary we can add 'none" to dictionary
         # doesn't make sense to look for it, also because destroy previous data
         if wrd == ['none']:

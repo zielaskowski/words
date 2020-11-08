@@ -463,16 +463,18 @@ class GUIWordsCtr(QtCore.QObject):
                     os.remove(self._fs.getMP3())
                 except:
                     pass
-                # gTTS module is not very stable
-                # has problem with tokens sometimes
                 try:
+                    # gTTS module is not very stable
+                    # has problem with tokens sometimes
                     word_sound = gTTS(text=row.ru, lang='ru', lang_check=False)
                     word_sound.save(self._fs.getMP3())
                 except:
+                    os.remove(self._fs.getMP3())
                     self._view.setCursor(QtGui.QCursor(QtCore.Qt.ArrowCursor))
                     self.disp_statusbar("noMP3")
                     return
-            playsound.playsound(self._fs.getMP3())
+            if os.path.exists(self._fs.getMP3()):
+                playsound.playsound(self._fs.getMP3())
 
     # menu function
     def _new_DB(self):
