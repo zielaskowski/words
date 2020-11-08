@@ -166,11 +166,9 @@ class Dictionary:
             self.history.append(line_no)
             self.history_index = len(self.history) - 1
             row = self.db.iloc[line_no]
-            # DEBUG
-            print('mid_hits: ', mid_hits, '  try_n: ', self.db.iloc[line_no,2])
         else:  # return selected line
             # DEBUG
-            print(line_no, self.history)
+            print(line_no,' z ',len(self.db), self.history)
             if line_no > len(self.db):
                 line_no = len(self.db)
             row = self.db.iloc[line_no]
@@ -221,7 +219,8 @@ class Dictionary:
             self.history_index += 1
             new_row = self.history[-1] + n
             # we need to check length of db
-            if new_row > len(self.db):
+            # in case we are at the end of db
+            if new_row > len(self.db) - 1:
                 new_row = 0
             self.history.append(new_row)
         else:  # we are not deep enough in past
