@@ -22,7 +22,7 @@ class Dictionary:
 
     def __init__(self, tagDesc_file, trans_file):
         # main DB to store dictionary
-        self.db = pd.DataFrame([['','',0,0]], columns=['ru', 'pl', 'try_n', 'fail_n'])
+        self.db = pd.DataFrame([['', '', 0, 0]], columns=['ru', 'pl', 'try_n', 'fail_n'])
         # temp DB to store import date before commit
         self.db_temp = pd.DataFrame(columns=['ru', 'pl'])
         self.err = ''
@@ -45,7 +45,7 @@ class Dictionary:
         none_i = self.db[self.db.ru == 'none'].index
         self.db.drop(none_i, inplace=True)
         self.err = ''
-        self.db_temp = self.db_temp.iloc[0:0] # reset data frame
+        self.db_temp = self.db_temp.iloc[0:0]  # reset data frame
         if type(words) == list:
             for w in words:
                 if type(w) == str:
@@ -58,13 +58,14 @@ class Dictionary:
             self.err += f'Not allowed type {type(words)}\n'
         self.db_temp.reset_index(inplace=True, drop=True)
         # remove rows already existing in self.db
-        db_merge = pd.merge(self.db, self.db_temp, left_on = ['ru', 'pl'], right_on=['ru', 'pl'], how='right', indicator=True)
+        db_merge = pd.merge(self.db, self.db_temp, left_on=['ru', 'pl'], right_on=['ru', 'pl'], how='right',
+                            indicator=True)
         rows_keep = db_merge['_merge'] == 'right_only'
         rows_drop = [not i for i in rows_keep]
         db_drop = db_merge[rows_drop]
         len_raw = len(self.db_temp)
         self.db_temp = db_merge[rows_keep]
-        self.db_temp = self.db_temp.iloc[:,0:2]
+        self.db_temp = self.db_temp.iloc[:, 0:2]
         len_fin = len(self.db_temp)
         dup_no = len_raw - len_fin
         err = ''
@@ -76,7 +77,7 @@ class Dictionary:
                 if not True in [line.find(w) > -1 for w in db_drop['ru']]:
                     err += line
             self.err = err
-           
+
             self.err += f'<p>Number of duplicates in active DB: {len_raw - len_fin}</p>'
         if not self.err:
             self.err = '<p>No errors</p>'
@@ -112,20 +113,21 @@ class Dictionary:
         will use tagger to check if second word is ru
         '''
         line = line.strip()  # remove space at beginning and at the end
-        if re.findall(r'(?<!\s) (?!\s)',  line) and len(line.split()) == 2:  # if only one space and no other whitespace around
+        if re.findall(r'(?<!\s) (?!\s)', line) and len(
+                line.split()) == 2:  # if only one space and no other whitespace around
             # second word can be pl or ru
-            words = line.split() 
-            self.tager.tag(words[1]) # hopefully tagger will recognize ru word
-            gram = [gram for gram in self.tager._gramma[0].iloc[1,:] if gram is not 'none']
-            if not gram: # tager returned none
-                self.wiki.checkWiki([words[1]], lang=['ru']) # double check with wiki
-                if self.wiki.wrd[0] != '': # jednak cos znalezlismy
-                    return [line,''] # wiki found ru word so no translation
+            words = line.split()
+            self.tager.tag(words[1])  # hopefully tagger will recognize ru word
+            gram = [gram for gram in self.tager._gramma[0].iloc[1, :] if gram is not 'none']
+            if not gram:  # tager returned none
+                self.wiki.checkWiki([words[1]], lang=['ru'])  # double check with wiki
+                if self.wiki.wrd[0] != '':  # jednak cos znalezlismy
+                    return [line, '']  # wiki found ru word so no translation
                 else:
                     self.err += f"<p>Not sure if correct: ru:<b>{words[0]}</b>  pl:<b>{words[1]}</b> YES?</p>"
-                    return words # tager did not recognize: assume pl
+                    return words  # tager did not recognize: assume pl
             else:
-                return [line,''] # tager found ru word so no translation
+                return [line, '']  # tager found ru word so no translation
         line = re.sub(r'(?<!\s) (?!\s)', '_', line)  # single spaces replace with '_' to keep two-words combos together
         words = line.split()  # all other whitespaces separate the translation
         # if missing pl translation
@@ -218,12 +220,11 @@ class Dictionary:
         self.db.drop(self.db.index[row_no], inplace=True)
         self.db.reset_index(inplace=True, drop=True)
         # remove dropped line from history
-        self.history = [i if i < row_no else i - 1 for i in self.history if i !=row_no]
+        self.history = [i if i < row_no else i - 1 for i in self.history if i != row_no]
         if not self.history:
             self.history = [0]
         if self.history_index > len(self.history) - 1:
             self.history_index = len(self.history) - 1
-
 
 
 class FileSystem:
@@ -246,29 +247,34 @@ class FileSystem:
     _PATH = 0  # location of path in self._fileXXX list
     _NAME = 1  # location of name in self._fileXXX list
     _EXT = 2  # location of extension in self._fileXXX list
+
     def __init__(self):
-        self._fileIMP = ['','','']
-        self._fileDB = ['','','']
-        self._fileAPP = ['','','']
+        self._fileIMP = ['', '', '']
+        self._fileDB = ['', '', '']
+        self._fileAPP = ['', '', '']
         self._fileMP3 = ['opt', 'word', '.mp3']  # name is constant, path will be taken from self._fileAPP
         self._fileCONF = ['opt', 'conf', '.txt']  # Configuration file. name is constant
-        self._fileTags = ['opt', 'RU_tagset', '.txt'] #  Tags description for tagger
-        self._fileTrans = ['opt', 'trans2pl', '.txt'] # Tags translation to pl
-        self._fileGrammaExp = ['opt', 'gramma_expl', '.txt'] # gramatic explanation
+        self._fileTags = ['opt', 'RU_tagset', '.txt']  # Tags description for tagger
+        self._fileTrans = ['opt', 'trans2pl', '.txt']  # Tags translation to pl
+        self._fileGrammaExp = ['opt', 'gramma_expl', '.txt']  # gramatic explanation
         self.option = {"LastDB": '',
-                        "welcome": "Write welcome message into ./opt/conf.txt..."}
+                       "welcome": "Write welcome message into ./opt/conf.txt..."}
         self.typeIMP = ['text', '.txt']
         self.typeDB = ['SQlite3', '.s3db']
-        
+
         self.setAPP()
         self._fileMP3[self._PATH] = self._fileAPP[self._PATH] + self._fileMP3[self._PATH] + self._PS
         self._fileCONF[self._PATH] = self._fileAPP[self._PATH] + self._fileCONF[self._PATH] + self._PS
         self._fileTags[self._PATH] = self._fileAPP[self._PATH] + self._fileTags[self._PATH] + self._PS
         self._fileTrans[self._PATH] = self._fileAPP[self._PATH] + self._fileTrans[self._PATH] + self._PS
+        if not os.path.isfile(self.getTrans()):
+            self._fileTrans = ['', '', ]
         self._fileGrammaExp[self._PATH] = self._fileAPP[self._PATH] + self._fileGrammaExp[self._PATH] + self._PS
+        if not os.path.isfile(self.getGrammaExp()):
+            self._fileGrammaExp = ['', '', '']
         self._checkCONF()
         self.setDB(self.getOpt('LastDB'), check=True)
-    
+
     def getTags(self, path=False, file=False):
         """Returns file path (inculding filename) to Tags description file. \n
         Tagger return symbolic description, file translate symbols to meaningfull description \n
@@ -281,12 +287,12 @@ class FileSystem:
             fp += self._fileTags[self._PATH]
         if file:
             fp += self._fileTags[self._NAME] + self._fileTags[self._EXT]
-        if not path and  not file:  #all: path+name+ext
+        if not path and not file:  # all: path+name+ext
             fp = self._fileTags[self._PATH] + self._fileTags[self._NAME] + self._fileTags[self._EXT]
         return fp
 
     def getTrans(self, path=False, file=False):
-        """Returns file path (inculding filename) to translation file
+        """Returns file path (including filename) to translation file
 
         Tags description are in EN, file contain translation to PL
         TODO: in case file is missing download from gitHUB
@@ -298,7 +304,7 @@ class FileSystem:
             fp += self._fileTrans[self._PATH]
         if file:
             fp += self._fileTrans[self._NAME] + self._fileTrans[self._EXT]
-        if not path and not file:  #all: path+name+ext
+        if not path and not file:  # all: path+name+ext
             fp = self._fileTrans[self._PATH] + self._fileTrans[self._NAME] + self._fileTrans[self._EXT]
         return fp
 
@@ -314,7 +320,7 @@ class FileSystem:
             fp += self._fileGrammaExp[self._PATH]
         if file:
             fp += self._fileGrammaExp[self._NAME] + self._fileGrammaExp[self._EXT]
-        if not path and not file:  #all: path+name+ext
+        if not path and not file:  # all: path+name+ext
             fp = self._fileGrammaExp[self._PATH] + self._fileGrammaExp[self._NAME] + self._fileGrammaExp[self._EXT]
         return fp
 
@@ -332,7 +338,7 @@ class FileSystem:
             fp += self._fileMP3[self._PATH]
         if file:
             fp += self._fileMP3[self._NAME] + self._fileMP3[self._EXT]
-        if not path and not file:  #all: path+name+ext
+        if not path and not file:  # all: path+name+ext
             fp = self._fileMP3[self._PATH] + self._fileMP3[self._NAME] + self._fileMP3[self._EXT]
         return fp
 
@@ -349,7 +355,7 @@ class FileSystem:
             fp += self._fileIMP[self._NAME] + self._fileIMP[self._EXT]
         if ext:  # 'text (*.txt)'
             fp += self.typeIMP[0] + ' (*' + self.typeIMP[1] + ')'
-        if not path and not file and not ext:  #all: path+name+ext
+        if not path and not file and not ext:  # all: path+name+ext
             fp = self._fileIMP[self._PATH] + self._fileIMP[self._NAME] + self._fileIMP[self._EXT]
         return fp
 
@@ -359,8 +365,8 @@ class FileSystem:
         """
         if check and not os.path.isfile(path):
             # file is missing
-            self.writeOpt('LastDB','')
-            self._fileDB = ['','','']
+            self.writeOpt('LastDB', '')
+            self._fileDB = ['', '', '']
             return
         # override file extension. No other than s3db can be opened
         self._fileDB = self._split_path(path)
@@ -379,7 +385,7 @@ class FileSystem:
             fp += self._fileDB[self._NAME] + self._fileDB[self._EXT]
         if ext:  # 'SQlite (*.s3db)'
             fp += self.typeDB[0] + ' (*' + self.typeDB[1] + ')'
-        if not path and not file and not ext:  #all: path+name+ext
+        if not path and not file and not ext:  # all: path+name+ext
             fp = self._fileDB[self._PATH] + self._fileDB[self._NAME] + self._fileDB[self._EXT]
         return fp
 
@@ -407,7 +413,7 @@ class FileSystem:
             fp += self._fileCONF[self._PATH]
         if file:
             fp += self._fileCONF[self._NAME] + self._fileCONF[self._EXT]
-        if not path and not file:  #all: path+name+ext
+        if not path and not file:  # all: path+name+ext
             fp = self._fileCONF[self._PATH] + self._fileCONF[self._NAME] + self._fileCONF[self._EXT]
         return fp
 
@@ -425,14 +431,14 @@ class FileSystem:
         with open(self.getCONF(), 'w') as file:
             json.dump(conf, file)
 
-    def getOpt(self,op):
+    def getOpt(self, op):
         """Get value or option
         allowed options: \n
         LastDB - last DB when app was closed \n
         welcome - welcome text, showed when no DB opened \n
         """
         if op in self.option:
-            with open(self.getCONF(),'r') as file:
+            with open(self.getCONF(), 'r') as file:
                 conf = json.load(file)
             return conf[op]
         else:
@@ -443,7 +449,7 @@ class FileSystem:
         Removes wrong entries, add entries if missing
         """
         ref_conf = {}
-        with open(self.getCONF(), 'a+') as file: #  will create file if not exist
+        with open(self.getCONF(), 'a+') as file:  # will create file if not exist
             try:
                 # on WIN 'r+' is not creating new file! why??
                 # a+ is working fine, but set the cursor to eof
@@ -451,15 +457,15 @@ class FileSystem:
                 file.seek(0)
                 conf = json.load(file)
             except:
-                conf = {'new conf tbc': ''} #  empty file
-        for op in self.option: # check here for known options
+                conf = {'new conf tbc': ''}  # empty file
+        for op in self.option:  # check here for known options
             if op not in conf:
                 ref_conf[op] = self.option[op]
             else:
                 ref_conf[op] = conf[op]
         if ref_conf != conf:
             self._repairCONF(ref_conf)
-        
+
     def _repairCONF(self, conf: dict):
         """create new fresh conf file
         """
@@ -493,7 +499,6 @@ class FileSystem:
         return str
 
 
-
 class TTager:
     """Return grammar description of the word with lemma.
 
@@ -522,12 +527,13 @@ class TTager:
     or maybe RDRPOSTtagger, looks very promising
     http://rdrpostagger.sourceforge.net/
     """
+
     def __init__(self, tagDesc_file, tagTrans_file):
 
         #  we can have more then one word, we have list for each word
-        self._gramma = [] #  gramatical description of the word
-        self._lemma = [] #  lemma form of the word
-        self.wrd = [] # word itself
+        self._gramma = []  # gramatical description of the word
+        self._lemma = []  # lemma form of the word
+        self.wrd = []  # word itself
         # initialize tagger
         self.tag_eng = treetaggerwrapper.TreeTagger(TAGLANG='ru')
         #  get tags description and translation
@@ -542,16 +548,16 @@ class TTager:
         tagset = tagset.loc[tagset.MSD != 'MSD']
         # some values are '-' so convert to NaN 
         tagset.replace('-', pd.NA, inplace=True)
-        return(tagset)
+        return (tagset)
 
-    def _readTagsTrans(self, file=''):    
+    def _readTagsTrans(self, file=''):
         # read tagset translation
         tagset_trans = ''
         if file:
-            tagset_trans = pd.read_csv(file, sep='\t+', names=["ru","pl","del"],
-                                        comment='#', engine='python')
-            tagset_trans = tagset_trans.iloc[:,0:2] # in case some tabs on end of the line
-        return(tagset_trans)
+            tagset_trans = pd.read_csv(file, sep='\t+', names=["ru", "pl", "del"],
+                                       comment='#', engine='python')
+            tagset_trans = tagset_trans.iloc[:, 0:2]  # in case some tabs on end of the line
+        return tagset_trans
 
     def tag(self, wrd):
         #  avoid repetition
@@ -572,40 +578,40 @@ class TTager:
             # may be empty for empty word
             if not tag:
                 tag = ['\t\t']
-            tag = tag[0].split('\t') # also for single word, tagger return the result in one element list
+            tag = tag[0].split('\t')  # also for single word, tagger return the result in one element list
             self._gramma.append(self._grammaDesc(tag[1]))
             self._lemma.append(tag[2])
-    
+
     def _grammaDesc(self, gramma_code):
         # find tag identifier in tags description
         gramma_trans = self.tagDesc[self.tagDesc.MSD == gramma_code]
         # drop all NaN
-        gramma_trans = gramma_trans.dropna(axis=1) #, inplace= True)
+        gramma_trans = gramma_trans.dropna(axis=1)  # , inplace= True)
         # drop first column, being the MSD which is short identifier
-        gramma_trans = gramma_trans.iloc[:,1:]
+        gramma_trans = gramma_trans.iloc[:, 1:]
         # move col names to first row, so translation work well also for headers
         if gramma_trans.empty:
-            gramma_trans = pd.DataFrame(["CATEGORY","none"],columns=["CATEGORY"])
+            gramma_trans = pd.DataFrame(["CATEGORY", "none"], columns=["CATEGORY"])
         else:
             gramma_trans = pd.DataFrame([gramma_trans.columns,
-                                       gramma_trans.iloc[0,:].to_list()],
-                                       columns = gramma_trans.columns)
+                                         gramma_trans.iloc[0, :].to_list()],
+                                        columns=gramma_trans.columns)
         # translate to PL
         gramma_trans.replace(to_replace=self.tagTrans.ru.to_list(),
-                            value=self.tagTrans.pl.to_list(),
-                            inplace=True)
+                             value=self.tagTrans.pl.to_list(),
+                             inplace=True)
         return gramma_trans
-    
+
     def formatAll(self, wrd_i):
-        gram_desc_str=""
+        gram_desc_str = ""
         # change df to str and nice format
         gram_desc_str += '<p align="center"><span style=" font-weight:600;">' + self.wrd[wrd_i].upper() + '</span></p>'
         for col in self._gramma[wrd_i].columns:
-            gram_desc_str += '<p>' + self._gramma[wrd_i].loc[0,col].upper().strip() + ": " + self._gramma[wrd_i].loc[1,col].strip() + "</p>"
+            gram_desc_str += '<p>' + self._gramma[wrd_i].loc[0, col].upper().strip() + ": " + self._gramma[wrd_i].loc[
+                1, col].strip() + "</p>"
         gram_desc_str += "<p>-----------</p>"
         gram_desc_str += "<p>" + "LEMMA: " + self._lemma[wrd_i] + "</p>"
-        return(gram_desc_str)
-
+        return (gram_desc_str)
 
 
 class Wiki:
@@ -613,29 +619,30 @@ class Wiki:
         need to handle accent in words (need to be removed)
     '''
     transFile = ''
+
     def __init__(self, transFile=''):
         self._url = {'ru': "https://ru.wiktionary.org/wiki/",
                      'pl': "https://pl.wiktionary.org/wiki/"}
         self._html_it = {'pl': '',
-                      'ru': ''} #  HTML content will be here (bs objects)
-        self._html = [] #  _html{} for each word put to list
+                         'ru': ''}  # HTML content will be here (bs objects)
+        self._html = []  # _html{} for each word put to list
         self.data_it = {'translation': '',
-                     'declination_pl': '',
-                     'example': '',
-                     'declination_ru': ''} # extracted data from HTML will be here (raw HTML) 
-        self.data = [] #  data{} for each word put to list
+                        'declination_pl': '',
+                        'example': '',
+                        'declination_ru': ''}  # extracted data from HTML will be here (raw HTML)
+        self.data = []  # data{} for each word put to list
         self.wrd = []
         if not self.transFile:
             self.transFile = transFile
             self.trans = self._readTrans(transFile)
-    
-    def _readTrans(self, file=''):    
+
+    def _readTrans(self, file=''):
         # read translation
         trans = ''
         if file:
-            trans = pd.read_csv(file, sep='\t+', names=["ru","pl","del"],
+            trans = pd.read_csv(file, sep='\t+', names=["ru", "pl", "del"],
                                 comment='#', engine='python')
-            trans = trans.iloc[:,0:2] # in case some tabs on end of the line
+            trans = trans.iloc[:, 0:2]  # in case some tabs on end of the line
         return trans
 
     def readData(self, wrd_i):
@@ -651,7 +658,7 @@ class Wiki:
             wiki_resp = requests.get(self._url[lang] + self.wrd[wrd_i])
             if wiki_resp.status_code == 200:
                 self._html[wrd_i][lang] = bs(wiki_resp.content, 'lxml')
-                parse_check += self.wikiContent(lang=lang, wrd_i=wrd_i) # extract only interesting things
+                parse_check += self.wikiContent(lang=lang, wrd_i=wrd_i)  # extract only interesting things
         # if both languages parsed correctly, parse_check shall be = 2
         # but also shall be enough if only one parsed
         if parse_check == 0:
@@ -667,10 +674,10 @@ class Wiki:
         # if ru wiki, extract data
         if self._html[wrd_i]['ru']:
             self._extractDeclination_ru(wrd_i=wrd_i)
-        
+
         return self.formatAll(wrd_i)
 
-    def _removeAcc(self,wrd):
+    def _removeAcc(self, wrd):
         '''remove accent symbols
         conv to lowercase
         '''
@@ -687,17 +694,17 @@ class Wiki:
             x = rng.split(':')
             x = [int(i) for i in x]
             if len(x) == 2:
-                lst.extend(list(range(x[0],x[1]+1)))
+                lst.extend(list(range(x[0], x[1] + 1)))
             else:
                 lst.append(x[0])
         return lst
 
     def _extractTranslation(self, wrd_i):
-        trans = bs("<div><h3>znaczenia</h3></div>",'lxml')
+        trans = bs("<div><h3>znaczenia</h3></div>", 'lxml')
         html = self._html[wrd_i]['pl']
 
         def rightDlTag(tag):
-            return tag.name == 'dl' and tag.find('span',class_='fld-znaczenia')
+            return tag.name == 'dl' and tag.find('span', class_='fld-znaczenia')
 
         def nextCatDlTag(tag):
             # categgory starts with <dl><dt><span class=
@@ -705,21 +712,21 @@ class Wiki:
 
         dlTag = self._html[wrd_i]['pl'].find(rightDlTag)
         for sib in dlTag.next_siblings:
-            if sib.find(nextCatDlTag): # all siblings down to next <dl> with <dt> and class
+            if sib.find(nextCatDlTag):  # all siblings down to next <dl> with <dt> and class
                 break
             new_tag = html.new_tag(sib.name)
-            [new_tag.append(copy.copy(sub_tag)) # tag can (and mostly have) few sub_tags so need to iterate
-                for sub_tag in sib.contents if sub_tag.name is not None]
+            [new_tag.append(copy.copy(sub_tag))  # tag can (and mostly have) few sub_tags so need to iterate
+             for sub_tag in sib.contents if sub_tag.name is not None]
             trans.div.append(new_tag)
 
         # remove href links
         for aTag in trans.find_all('a'):
             aTag.unwrap()
-        
+
         # if nothing found, set empty str
         if trans.text == 'znaczenia\n':
             trans = ''
-        
+
         self.data[wrd_i]['translation'] = copy.copy(trans)
 
     def _prettyDeclination_ru(self, wrd_i):
@@ -742,12 +749,12 @@ class Wiki:
             if txt:
                 txt = txt.strip()
                 txt = txt.replace('\n', '')
-                txt = txt.replace('\xa0',' ')
+                txt = txt.replace('\xa0', ' ')
                 txt = pd.DataFrame([txt])
                 txt.replace(to_replace=self.trans.ru.to_list(),
                             value=self.trans.pl.to_list(),
                             inplace=True)
-                txt = txt.iloc[0,0]
+                txt = txt.iloc[0, 0]
                 # add href tag with empty link
                 nTag = decli.new_tag("a", href=txt)
                 # black text
@@ -758,16 +765,16 @@ class Wiki:
                 tag.append(nTag)
 
     def _extractDeclination_pl(self, wrd_i):
-        decli = bs("<div><h3>odmiana</h3></div>",'lxml')
+        decli = bs("<div><h3>odmiana</h3></div>", 'lxml')
         html = self._html[wrd_i]['pl']
 
         def rightDlTag(tag):
-            return tag.name == 'dl' and tag.find('span',class_='fld-odmiana')
+            return tag.name == 'dl' and tag.find('span', class_='fld-odmiana')
 
         dlTag = html.find(rightDlTag)
         for ddTag in dlTag.find_all('dd'):
             decli.div.append(copy.copy(ddTag))
-        
+
         # remove href links
         for aTag in decli.find_all('a'):
             aTag.unwrap()
@@ -775,11 +782,11 @@ class Wiki:
         # if nothing found, set empty str
         if decli.text == 'odmiana':
             decli = ''
-        
+
         self.data[wrd_i]['declination_pl'] = copy.copy(decli)
 
     def _extractDeclination_ru(self, wrd_i):
-        decli = bs("<div><h3>odmiana</h3></div>",'lxml')
+        decli = bs("<div><h3>odmiana</h3></div>", 'lxml')
         html = self._html[wrd_i]['ru']
 
         def tdWithClass(tag):
@@ -787,12 +794,12 @@ class Wiki:
 
         # unfortunatelly we need to make negative selection
         # reject table with list<li> or with <td> and class=*
-        tableTag = [tag for tag in html.find_all('table') 
-                        if not tag.find(tdWithClass) 
-                            and not tag.find('li')]
+        tableTag = [tag for tag in html.find_all('table')
+                    if not tag.find(tdWithClass)
+                    and not tag.find('li')]
         if len(tableTag) > 0:
             decli.div.append(tableTag[0])
-        
+
         # remove href links
         for aTag in decli.find_all('a'):
             aTag.unwrap()
@@ -813,16 +820,16 @@ class Wiki:
             #     wiki_ru = list(set(f.readlines()))
             # with open('./words/opt/wiki_trans.txt','w+') as f:
             #     f.writelines(wiki_ru)
-                    
+
             self.data[wrd_i]['declination_ru'] = copy.copy(decli)
             self._prettyDeclination_ru(wrd_i)
 
     def _extractExample(self, wrd_i):
-        exa = bs("<div><h3>przykłady</h3></div>",'lxml')
+        exa = bs("<div><h3>przykłady</h3></div>", 'lxml')
         html = self._html[wrd_i]['pl']
 
         def rightDlTag(tag):
-            return tag.name == 'dl' and tag.find('span',class_='fld-przyklady')
+            return tag.name == 'dl' and tag.find('span', class_='fld-przyklady')
 
         dlTag = html.find(rightDlTag)
         for ddTag in dlTag.find_all('dd'):
@@ -831,24 +838,24 @@ class Wiki:
         # remove href links
         for aTag in exa.find_all('a'):
             aTag.unwrap()
-        
+
         # if nothing found, set empty str
         if exa.text == 'przykłady':
             exa = ''
         self.data[wrd_i]['example'] = copy.copy(exa)
 
-    def checkWiki(self, wrd, lang=['pl','ru']):
-        ''' check if page exist (ask for HEAD only without downloading whole page)
+    def checkWiki(self, wrd, lang=['pl', 'ru']):
+        """ check if page exist (ask for HEAD only without downloading whole page)
         it requires for ANY of wiki exist (pl or ru). Still can happen that
         only ru exist but without declination or frazeology so info is zero....lower()
         return null. check self.wrd if success, or '' if fail
-        '''
+        """
         # to avoid repetition
         for wrd_n in wrd:
             if self._removeAcc(wrd_n) in self.wrd:
                 return
         # temporary we can add 'none" to dictionary
-        # dosent make sense to look for it, also becouse destroy previous data
+        # doesn't make sense to look for it, also because destroy previous data
         if wrd == ['none']:
             return
         #  reset old data, start search again
@@ -861,7 +868,7 @@ class Wiki:
             self.data.append(copy.copy(self.data_it))
             # remove accent from wrd
             wrd_n = self._removeAcc(wrd_n)
-            
+
             if 'pl' in lang and wrd_n:
                 wiki_resp_pl = requests.head(self._url['pl'] + wrd_n)
                 wiki_resp_pl = wiki_resp_pl.status_code
@@ -874,7 +881,7 @@ class Wiki:
                 self.wrd.append('')
 
     def formatAll(self, wrd_i):
-        wiki = bs("<div><h2></h2></div>",'lxml')
+        wiki = bs("<div><h2></h2></div>", 'lxml')
         data = self.data[wrd_i]
         wiki.h2.string = self.wrd[wrd_i]
         wiki.div.append(copy.copy(data['translation']))
@@ -897,26 +904,29 @@ class Wiki:
         '''
         if lang == 'pl':
             h = 'h2'
+
             def right_hTag(tag):
-                return tag.name == 'h2' and tag.find('span',class_='lang-code-ru')
+                return tag.name == 'h2' and tag.find('span', class_='lang-code-ru')
         else:
             h = 'h1'
-            def right_hTag(tag):
-                return tag.name == 'h1' and tag.find('span',id='Русский')
 
-        source = self._html[wrd_i][lang].find('div',class_='mw-parser-output') # taking only interesting content, skipping, menus etc.
-        html = bs("<div></div>",'lxml') # here we store what interesting
+            def right_hTag(tag):
+                return tag.name == 'h1' and tag.find('span', id='Русский')
+
+        source = self._html[wrd_i][lang].find('div',
+                                              class_='mw-parser-output')  # taking only interesting content, skipping, menus etc.
+        html = bs("<div></div>", 'lxml')  # here we store what interesting
         try:
             hTag = source.find(right_hTag)
         except:
             # something is wrong:
-            return 0 # fail
+            return 0  # fail
         # DEBUG:
         if not hTag:
             print("DEBUG\n")
             print(source)
             self._html[wrd_i][lang] = ''
-            return 0 # fail
+            return 0  # fail
 
         for tag in hTag.next_siblings:
             if tag.name == h:
@@ -924,11 +934,10 @@ class Wiki:
             if tag.name is not None:
                 #  need to create new tag 'couse appending tag directly will destroy new_siblings generator
                 new_tag = html.new_tag(tag.name)
-                [new_tag.append(copy.copy(sub_tag)) # tag can (and mostly have) few sub_tags so need to iterate
-                    for sub_tag in tag.contents if sub_tag.name is not None]
+                [new_tag.append(copy.copy(sub_tag))  # tag can (and mostly have) few sub_tags so need to iterate
+                 for sub_tag in tag.contents if sub_tag.name is not None]
                 html.div.append(new_tag)
-        
+
         self._html[wrd_i][lang] = html
 
-        return 1 # success
-    
+        return 1  # success

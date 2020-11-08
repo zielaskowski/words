@@ -1,4 +1,4 @@
-'''
+"""
 system requirements:
 Using treetagger wraper, to work you need treetagger executable with parameter files:
     https://www.cis.uni-muenchen.de/~schmid/tools/TreeTagger/
@@ -13,19 +13,14 @@ Using treetagger wraper, to work you need treetagger executable with parameter f
     sh install-tagger.sh
 using Gstreamer, you need (linux only):
 - cairo-devel pkg-config python3-devel gcc gobject-introspection-devel libgirepository1.0-dev
-'''
-
+"""
 
 import sys
-from words.gui import GUIWords, GUIWordsCtr
+from gui import GUIWords, GUIWordsCtr
 from PyQt5.QtWidgets import QApplication
-
-
 
 app = QApplication([])
 view = GUIWords()
 view.show()
 GUIWordsCtr(view)
 sys.exit(app.exec())
-
-
