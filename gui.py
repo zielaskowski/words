@@ -8,10 +8,7 @@ from PyQt5.QtWidgets import QFileDialog
 from modules import Dictionary, FileSystem
 from qt_gui.import_window import Ui_ImportWindow
 from qt_gui.main_window import QtCore, QtGui, QtWidgets, Ui_MainWindow
-<<<<<<< HEAD
-=======
 from testing.debug import debug
->>>>>>> ff4f5e15c74397ea1b2c062756fc1cd7d00986aa
 
 
 class validSearchClass(QtGui.QValidator):
@@ -26,11 +23,7 @@ class validSearchClass(QtGui.QValidator):
             state = QtGui.QValidator.Intermediate
         else:
             state = QtGui.QValidator.Invalid
-<<<<<<< HEAD
-        return (state, wrd, index)
-=======
         return state, wrd, index
->>>>>>> ff4f5e15c74397ea1b2c062756fc1cd7d00986aa
 
     def fixup(self, wrd):
         pass
@@ -166,12 +159,6 @@ class GUIWordsCtr(QtCore.QObject):
             self.toolTipTxt = pd.read_csv(file, sep='\t+', names=["abr", "exp", "del"],
                                           comment='#', engine='python')
             self.toolTipTxt = self.toolTipTxt.iloc[:, 0:2]  # in case some tabs on end of the line
-<<<<<<< HEAD
-        self._view.txt_desc_tager_1.setContextMenuPolicy(QtCore.Qt.ActionsContextMenu)
-        copyPL = QtWidgets.QAction("cos", self)
-        copyPL.triggered.connect(self._add)
-        self._view.txt_desc_tager_1.addAction(copyPL)
-=======
 
         # read configuration
         self._readLastDB()
@@ -206,7 +193,6 @@ class GUIWordsCtr(QtCore.QObject):
         self._view.txt_desc_goog.addAction(self.addPL)
         self._view.txt_desc_goog.addAction(self.replRU)
         self._view.txt_desc_goog.addAction(self.replPL)
->>>>>>> ff4f5e15c74397ea1b2c062756fc1cd7d00986aa
 
     def _installDblClick(self):
         """Install event handler on all txt desc boxes\n
@@ -216,10 +202,7 @@ class GUIWordsCtr(QtCore.QObject):
         for tab_s in self.tab_desc:
             for tab_i in range(tabs_no):
                 exec(f'self._view.txt_desc_{tab_s}_{tab_i + 1}.installEventFilter(self)')
-<<<<<<< HEAD
-=======
         self._view.txt_desc_goog.installEventFilter(self)
->>>>>>> ff4f5e15c74397ea1b2c062756fc1cd7d00986aa
 
     def disp_statusbar(self, event=''):
         """Display text in status bar. Possible events:\n
@@ -322,12 +305,6 @@ class GUIWordsCtr(QtCore.QObject):
 
     def found(self):
         txt = self._view.search.text()
-<<<<<<< HEAD
-        row = self._logic.db.pl.loc[self._logic.db.pl == txt]
-        if not row:
-            row = self._logic.db.ru.loc[self._logic.db.ru == txt]
-        self.setDisplayText(self._logic.print(line_no=row.index))
-=======
         if txt not in [self._view.txt_pl.text(), self._view.txt_ru] and txt != '':
             row = self._logic.db.loc[self._logic.db.pl == txt]
             if row.empty:
@@ -336,7 +313,6 @@ class GUIWordsCtr(QtCore.QObject):
             self._view.search.setText('')
         else:
             self._view.search.setText('')
->>>>>>> ff4f5e15c74397ea1b2c062756fc1cd7d00986aa
 
     def fillCompleter(self):
         self._view.search.setCompleter(None)
@@ -415,13 +391,6 @@ class GUIWordsCtr(QtCore.QObject):
     def _prev(self):
         self.setDisplayText(self._logic.previous())
 
-<<<<<<< HEAD
-    def _add(self):
-        '''Adds empty row to DB(none   ''). Clears pl and ru txt. Pressing enter will be\n
-        catched by self._edit_txt and write to DB.\n
-        '''
-        if self._view.btn_add.isChecked():
-=======
     def _add(self, checked, ru='', pl='', action=''):
         """Adds empty row to DB(none   ''). Clears pl and ru txt. Pressing enter will be\n
         caught by self._edit_txt and write to DB.\n
@@ -451,31 +420,20 @@ class GUIWordsCtr(QtCore.QObject):
             self._view.btn_add.setChecked(True)
 
         if checked:
->>>>>>> ff4f5e15c74397ea1b2c062756fc1cd7d00986aa
             # create new row in db
             self._logic.importTXT('none')
             self._logic.commit()
             # clean GUI
-<<<<<<< HEAD
-            self._view.txt_ru.setText('')
-            self._view.txt_pl.setText('')
-            self._view.txt_ru.setFocus()  # will rise event, which will send to self._edit_txt
-            # dissable other btns
-=======
             self._view.txt_ru.setText(ru)
             self._view.txt_pl.setText(pl)
             self._view.txt_ru.setFocus()  # will rise event, which will send to self._edit_txt
             # disable other btns
->>>>>>> ff4f5e15c74397ea1b2c062756fc1cd7d00986aa
             self._view.btn_del.setDisabled(True)
             self._view.btn_previous.setDisabled(True)
             self._view.btn_rand.setDisabled(True)
             self._view.btn_next.setDisabled(True)
-<<<<<<< HEAD
-=======
             # change background
             self._view.btn_add.setStyleSheet('background-color: red;')
->>>>>>> ff4f5e15c74397ea1b2c062756fc1cd7d00986aa
         else:  # un click
             self._view.btn_add.setChecked(False)
             # enable other btns
@@ -549,11 +507,7 @@ class GUIWordsCtr(QtCore.QObject):
             self._fs.setDB(path)
         else:  # operation canceled
             return
-<<<<<<< HEAD
-        if self._logic.open_sql_db(self._fs.getDB()) != None:  # return None if fail
-=======
         if self._logic.open_sql_db(self._fs.getDB()) is not None:  # return None if fail
->>>>>>> ff4f5e15c74397ea1b2c062756fc1cd7d00986aa
             self.setDisplayText(self._logic.print())
             self.disp_statusbar('openDB')
             self._fs.writeOpt("LastDB", self._fs.getDB())
@@ -567,11 +521,7 @@ class GUIWordsCtr(QtCore.QObject):
 
     def _save_as_DB(self):
         file = QFileDialog.getSaveFileName(self._view, caption='Save As SQlite3 file',
-<<<<<<< HEAD
-                                           directory='',
-=======
                                            directory=self._fs.getDB(),
->>>>>>> ff4f5e15c74397ea1b2c062756fc1cd7d00986aa
                                            filter=self._fs.getDB(ext=True))
         # Qt lib returning always / as path separator
         # we need system specific, couse we are checking for file existence
@@ -637,11 +587,7 @@ class GUIWordsCtr(QtCore.QObject):
     # other helpers
     def _readLastDB(self):
         self._view.setCursor(QtGui.QCursor(QtCore.Qt.WaitCursor))
-<<<<<<< HEAD
-        if self._logic.open_sql_db(self._fs.getDB()) != None:  # return None if fail
-=======
         if self._logic.open_sql_db(self._fs.getDB()) is not None:  # return None if fail
->>>>>>> ff4f5e15c74397ea1b2c062756fc1cd7d00986aa
             self.setDisplayText(self._logic.print())
             self.disp_statusbar('openDB')
         else:  # missing file, display welcome message
@@ -666,11 +612,7 @@ class GUIWordsCtr(QtCore.QObject):
         self._view.close()
 
     def eventFilter(self, source, event):
-<<<<<<< HEAD
-        '''Catch signal:\n
-=======
         """Catch signal:\n
->>>>>>> ff4f5e15c74397ea1b2c062756fc1cd7d00986aa
         - if user closed the window\n
         - if user resize the window\n
         - double click on desc text box
@@ -686,12 +628,8 @@ class GUIWordsCtr(QtCore.QObject):
             # that is text select
             # after 100msec we get the text
             QtCore.QTimer.singleShot(100, lambda: self.selectTxt(source))
-<<<<<<< HEAD
-        elif event.type() == QtCore.QEvent.MouseButtonRelease and source.__class__ is QtWidgets.QLabel:
-=======
         elif event.type() == QtCore.QEvent.MouseButtonRelease and \
                 source.__class__ is QtWidgets.QLabel:
->>>>>>> ff4f5e15c74397ea1b2c062756fc1cd7d00986aa
             self.selectTxt(source)
         # selected from completer by mouse
         elif event.type() == QtCore.QEvent.InputMethodQuery and \
@@ -764,12 +702,8 @@ class GUIWordsCtr(QtCore.QObject):
                     font.setPointSize(font_size)
                     widget[i].setFont(font)
                     widget[(i + 1) % 2].setFont(font)  # other than i widget
-<<<<<<< HEAD
-                    if font_size < 4: break
-=======
                     if font_size < 4:
                         break
->>>>>>> ff4f5e15c74397ea1b2c062756fc1cd7d00986aa
                 else:
                     break
 
@@ -781,11 +715,7 @@ class GUIWordsCtr(QtCore.QObject):
         wrds_no = len(self._logic.tager.wrd)
         if wrds_no > tabs_no:
             wrds_no = tabs_no
-<<<<<<< HEAD
-        for tab_s in self.tab_desc:
-=======
         for tab_s in self.tab_desc:  # googl tab need to set separately
->>>>>>> ff4f5e15c74397ea1b2c062756fc1cd7d00986aa
             for tab_i in range(tabs_no):
                 if tab_i > wrds_no - 1:  # hide tabs if more than wrds
                     exec(f'self._view.tabWidget_{tab_s}.setTabVisible({tab_i}, False)')
@@ -796,8 +726,4 @@ class GUIWordsCtr(QtCore.QObject):
         for wrd_i in range(wrds_no):
             exec(f'self._view.txt_desc_tager_{wrd_i + 1}.setText(self._logic.tager.formatAll({wrd_i}))')
             exec(f'self._view.txt_desc_wiki_{wrd_i + 1}.setText(self._logic.wiki.readData({wrd_i}))')
-<<<<<<< HEAD
-            # exec(f'self._view.txt_desc_goog_{wrd_i + 1}.setText(self._logic.tager.formatAll(wrd_i))')
-=======
         self._view.txt_desc_goog.setText(self._logic.googl.formatAll())
->>>>>>> ff4f5e15c74397ea1b2c062756fc1cd7d00986aa

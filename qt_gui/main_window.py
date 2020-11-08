@@ -599,9 +599,5 @@ class Ui_MainWindow(object):
         self.save_as_DB.setToolTip(_translate("MainWindow", "save as DB"))
         self.save_as_DB.setStatusTip(_translate("MainWindow", "save opened DB under new name and opens it"))
         self.new_DB.setText(_translate("MainWindow", "new DB"))
-<<<<<<< HEAD
-        self.new_DB.setStatusTip(_translate("MainWindow", "create new and empty SQlite3 file"))
-=======
         self.new_DB.setStatusTip(_translate("MainWindow", "create new empty SQlite3 file. Save current DB."))
->>>>>>> ff4f5e15c74397ea1b2c062756fc1cd7d00986aa
 from qt_gui import resources_rc

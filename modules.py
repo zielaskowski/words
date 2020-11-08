@@ -570,11 +570,7 @@ class TTager:
             tagset_trans = pd.read_csv(file, sep='\t+', names=["ru", "pl", "del"],
                                        comment='#', engine='python')
             tagset_trans = tagset_trans.iloc[:, 0:2]  # in case some tabs on end of the line
-<<<<<<< HEAD
-        return tagset_trans
-=======
         return (tagset_trans)
->>>>>>> ff4f5e15c74397ea1b2c062756fc1cd7d00986aa
 
     def tag(self, wrd):
         #  avoid repetition
@@ -759,29 +755,6 @@ class Wiki:
             for brTag in tag.find_all('br'):
                 brTag.decompose()
             tag.smooth()
-<<<<<<< HEAD
-            # translate to PL
-            txt = tag.string
-            # DEBUG
-            print(txt)
-            if txt:
-                txt = txt.strip()
-                txt = txt.replace('\n', '')
-                txt = txt.replace('\xa0', ' ')
-                txt = pd.DataFrame([txt])
-                txt.replace(to_replace=self.trans.ru.to_list(),
-                            value=self.trans.pl.to_list(),
-                            inplace=True)
-                txt = txt.iloc[0, 0]
-                # add href tag with empty link
-                nTag = decli.new_tag("a", href=txt)
-                # black text
-                nTagSpan = decli.new_tag('span', style="color:#000000")
-                nTagSpan.string = txt
-                nTag.append(nTagSpan)
-                tag.string = ''
-                tag.append(nTag)
-=======
             if tag.th:
                 for tag_th in tag.find_all('th'):
                     # some are as table header <th>
@@ -810,7 +783,6 @@ class Wiki:
             nTag.append(nTagSpan)
             tag.string = ''
             tag.append(nTag)
->>>>>>> ff4f5e15c74397ea1b2c062756fc1cd7d00986aa
 
     def _extractDeclination_pl(self, wrd_i):
         decli = bs("<div><h3>odmiana</h3></div>", 'lxml')
@@ -893,11 +865,7 @@ class Wiki:
         self.data[wrd_i]['example'] = copy.copy(exa)
 
     def checkWiki(self, wrd, lang=['pl', 'ru']):
-<<<<<<< HEAD
         """ check if page exist (ask for HEAD only without downloading whole page)
-=======
-        ''' check if page exist (ask for HEAD only without downloading whole page)
->>>>>>> ff4f5e15c74397ea1b2c062756fc1cd7d00986aa
         it requires for ANY of wiki exist (pl or ru). Still can happen that
         only ru exist but without declination or frazeology so info is zero....lower()
         return null. check self.wrd if success, or '' if fail
@@ -993,8 +961,6 @@ class Wiki:
         self._html[wrd_i][lang] = html
 
         return 1  # success
-<<<<<<< HEAD
-=======
 
 
 class Googl:
@@ -1053,4 +1019,3 @@ class Googl:
                 tag = '</p>'
             txt += tag.replace('/', '') + self.data[i]['ru'] + '  ->  ' + self.data[i]['pl'] + tag
         return txt
->>>>>>> ff4f5e15c74397ea1b2c062756fc1cd7d00986aa
