@@ -9,6 +9,9 @@ import json
 import treetaggerwrapper
 from bs4 import BeautifulSoup as bs
 import requests
+from googletrans import Translator
+
+from testing.debug import debug
 
 
 class Dictionary:
@@ -32,6 +35,7 @@ class Dictionary:
         self.tager = TTager(tagDesc_file, trans_file)
         # read data from wiki
         self.wiki = Wiki(trans_file)
+        self.googl = Googl()
 
     def importTXT(self, words):
         """allowed input formats:
@@ -148,6 +152,7 @@ class Dictionary:
         Requires row number. If empty, will return random row.
         To return current row use self.history and self.history_index
         """
+        line_no = int(line_no)
         if line_no == -1:  # return rand line
             random.seed()
             mid_hits = max(self.db.try_n) // 2  # rand only from numbers with try count less than half of max
@@ -163,13 +168,20 @@ class Dictionary:
             row = self.db.iloc[line_no]
         else:  # return selected line
             # DEBUG
-            print(line_no, len(self.db), self.history)
+            print(line_no,' z ',len(self.db), self.history)
+            if line_no > len(self.db):
+                line_no = len(self.db)
             row = self.db.iloc[line_no]
+            if self.history[self.history_index] != line_no:
+                #  when we ask informatively only (about current index), do not change the history
+                #  if we jump to new line, update history
+                self.history.append(line_no)
+                self.history_index = len(self.history) - 1
         #  tag the word (or words) providing grammar and lemma
         self.tager.tag(row.ru)
-        #  check if wiki page exist for the row
+        #  check if wiki page exists for the row
         self.wiki.checkWiki(self.tager._lemma)
-
+        self.googl.translate(row.ru, self.tager._lemma)
         return row
 
     def score(self, fail_no=0):
@@ -207,7 +219,8 @@ class Dictionary:
             self.history_index += 1
             new_row = self.history[-1] + n
             # we need to check length of db
-            if new_row > len(self.db):
+            # in case we are at the end of db
+            if new_row > len(self.db) - 1:
                 new_row = 0
             self.history.append(new_row)
         else:  # we are not deep enough in past
@@ -557,7 +570,11 @@ class TTager:
             tagset_trans = pd.read_csv(file, sep='\t+', names=["ru", "pl", "del"],
                                        comment='#', engine='python')
             tagset_trans = tagset_trans.iloc[:, 0:2]  # in case some tabs on end of the line
+<<<<<<< HEAD
         return tagset_trans
+=======
+        return (tagset_trans)
+>>>>>>> ff4f5e15c74397ea1b2c062756fc1cd7d00986aa
 
     def tag(self, wrd):
         #  avoid repetition
@@ -742,6 +759,7 @@ class Wiki:
             for brTag in tag.find_all('br'):
                 brTag.decompose()
             tag.smooth()
+<<<<<<< HEAD
             # translate to PL
             txt = tag.string
             # DEBUG
@@ -763,6 +781,36 @@ class Wiki:
                 nTag.append(nTagSpan)
                 tag.string = ''
                 tag.append(nTag)
+=======
+            if tag.th:
+                for tag_th in tag.find_all('th'):
+                    # some are as table header <th>
+                    self.translate_ru(tag_th)
+            else:
+                # translate to PL
+                self.translate_ru(tag)
+
+    def translate_ru(self, tag):
+        txt = tag.string
+        if txt:
+            txt = txt.strip()
+            txt = txt.replace('\n', '')
+            txt = txt.replace('\xa0', ' ')
+            txt = pd.DataFrame([txt])
+            txt.replace(to_replace=self.trans.ru.to_list(),
+                        value=self.trans.pl.to_list(),
+                        inplace=True)
+            txt = txt.iloc[0, 0]
+            # add href tag with empty link
+            html = bs("<div></div>", 'lxml')
+            nTag = html.new_tag("a", href=txt)
+            # black text
+            nTagSpan = html.new_tag('span', style="color:#000000")
+            nTagSpan.string = txt
+            nTag.append(nTagSpan)
+            tag.string = ''
+            tag.append(nTag)
+>>>>>>> ff4f5e15c74397ea1b2c062756fc1cd7d00986aa
 
     def _extractDeclination_pl(self, wrd_i):
         decli = bs("<div><h3>odmiana</h3></div>", 'lxml')
@@ -845,7 +893,11 @@ class Wiki:
         self.data[wrd_i]['example'] = copy.copy(exa)
 
     def checkWiki(self, wrd, lang=['pl', 'ru']):
+<<<<<<< HEAD
         """ check if page exist (ask for HEAD only without downloading whole page)
+=======
+        ''' check if page exist (ask for HEAD only without downloading whole page)
+>>>>>>> ff4f5e15c74397ea1b2c062756fc1cd7d00986aa
         it requires for ANY of wiki exist (pl or ru). Still can happen that
         only ru exist but without declination or frazeology so info is zero....lower()
         return null. check self.wrd if success, or '' if fail
@@ -941,3 +993,64 @@ class Wiki:
         self._html[wrd_i][lang] = html
 
         return 1  # success
+<<<<<<< HEAD
+=======
+
+
+class Googl:
+    def __init__(self):
+        self.gt = Translator()
+        self.data_it = {'ru': '',
+                        'pl': ''}
+        self.data = [self.data_it]
+
+    def translate(self, wrds, lemma, src='ru'):
+        """Translate whole sentence, and each word (lemma)
+        """
+        #  avoid repetition
+        if self.data[0][src] == wrds:
+            return
+        else:
+            self.__init__()
+        #  if sentence we need one more item than len(lemma)
+        wrds = [wrds]
+        if len(lemma) > 1:
+            wrds += lemma
+        # making space to store translations
+        for i in range(len(wrds) - 1): # one slot already created in __init__
+            self.data.append(copy.copy(self.data_it))
+        # setting destination language
+        if src == 'ru':
+            dest = 'pl'
+        else:
+            dest = 'ru'
+        for i in range(len(wrds)):
+            try:
+                trans = self.gt.translate(wrds[i], dest=dest, src=src)
+                trans = trans.text
+            except:
+                trans = 'none'
+            self.data[i][src] = wrds[i]
+            self.data[i][dest] = trans
+
+    def translate_q(self, wrds, src='ru'):
+        """only translates, do not store in class and do not split sentences
+        """
+        # setting destination language
+        if src == 'ru':
+            dest = 'pl'
+        else:
+            dest = 'ru'
+        trans = self.gt.translate(wrds, dest=dest, src=src)
+        return trans.text
+
+    def formatAll(self):
+        txt = ''
+        for i in range(len(self.data)):
+            if i == 0:
+                tag = '</h2>'
+            else:
+                tag = '</p>'
+            txt += tag.replace('/', '') + self.data[i]['ru'] + '  ->  ' + self.data[i]['pl'] + tag
+        return txt
+>>>>>>> ff4f5e15c74397ea1b2c062756fc1cd7d00986aa

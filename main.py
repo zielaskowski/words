@@ -1,6 +1,6 @@
 """
 system requirements:
-Using treetagger wraper, to work you need treetagger executable with parameter files:
+Using treetagger wrapper, to work you need treetagger executable with parameter files:
     https://www.cis.uni-muenchen.de/~schmid/tools/TreeTagger/
     1. Download the tagger package for your system (PC-Linux, Mac OS-X, ARM64, ARMHF, ARM-Android, PPC64le-Linux).
     https://www.cis.uni-muenchen.de/~schmid/tools/TreeTagger/data/tree-tagger-linux-3.2.3.tar.gz
@@ -14,11 +14,19 @@ Using treetagger wraper, to work you need treetagger executable with parameter f
 using Gstreamer, you need (linux only):
 - cairo-devel pkg-config python3-devel gcc gobject-introspection-devel libgirepository1.0-dev
 """
+<<<<<<< HEAD
+=======
+
+>>>>>>> ff4f5e15c74397ea1b2c062756fc1cd7d00986aa
 
 import sys
 from gui import GUIWords, GUIWordsCtr
 from PyQt5.QtWidgets import QApplication
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> ff4f5e15c74397ea1b2c062756fc1cd7d00986aa
 app = QApplication([])
 view = GUIWords()
 view.show()

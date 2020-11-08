@@ -1,0 +1,12 @@
+im. przym. czynny prze.	<b>Imiesłów przymiotnikowy czynny czasu przeszłego</b>: nieosobowa forma czasowników niedokonanych mówiących o sprawcy czynności.<p>rozumieć -> zrozumiały</p>
+im. przys. prze.	<b>Imiesłów przysłówkowy uprzedni</b>: bezosobowa forma czasownika, stosowana w celu wyrażenia uprzedniości jakiejś czynności w stosunku do innej.<p>dobiec -> dobiegłszy</p><p>zapowiedzieć -> zapowiedziawszy</p>
+im. przym. bierny prze.	<b>Imiesłów przymiotnikowy bierny przeszły</b>: część mowy, imiesłów odnoszący się do przedmiotu czynności. W języku polskim forma czasu teraźniejszego i przeszłego jest identyczna.<p>pisać - > pisany</p><p>zrobić -> zrobiony</p>
+im. przym. czynny tera.	<b>Imiesłów przymiotnikowy czynny czasu teraźniejszego</b>: nieosobowa forma czasowników niedokonanych mówiących o sprawcy czynności.<p>pisać -> piszący</p><p>brać -> biorący</p>
+im. przys. tera.	<b>Imiesłów przysłówkowy wspólczesny<b>: bezosobowa forma czasownika wyrażająca czynność trwającą równocześnie z inną czynnością.<p>zmywać - > zmywając</p><p>czytać -> czytając</p>
+im. przym. bierny tera.	<b>Imiesłów przymiotnikowy bierny czasu teraźniejszego</b>: nieosobowa forma czasowników niedokonanych dnosząca się do przedmiotu czynności. W języku polskim forma czasu teraźniejszego i przeszłego jest identyczna.<p>pisać -> pisany</p>
+mianownik	<b>kto? co?</b><p>dom, mama, drzewo</p>
+dopełniacz	<b>kogo? co? (nie ma)</b><p>domu, mamy, drzewa</p>
+celownik	<b>komu? czemu?</b><p>domu, mamie, drzewu</p>
+biernik		<b>kogo? co? (widzę)</b><p>dom, mamę, drzewo</p>
+narzędnik	<b>(z)kim? (z)czym?</b><p>domem, mamą, drzewem</p>
+miejscownik	<b>o kim? o czym?</b><p>domu, mamie, drzewie</p>

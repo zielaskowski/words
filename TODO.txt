@@ -1,19 +1,14 @@
 IMPORT: delete row with right click
 IMPORT: sort errors so first are YES? different colors for error groups.
 IMPORT: if duplicated ru, but different pl, allow decision what to do (merge, pl1 or pl2)
-GUI: main window add google translation. there is a library for that...
-GUI: edit db
+GUI: edit db, table with filter capability
 TEST: do
-GUI: search filed
-
-
-GUI: zmiana ru nie zawsze odswieza wikipedie
-TAG: usun znaki zapytania, przecinki, wykrzykniki
 
 
 
-WIKI error:
-год - odmiana ru
-привези его из школы - crash
+wiki problems:
+- odmiana: даже nawet
 
-
+import problem:
+переворачивать  przewracać, odmieniać
+less or more than two words
