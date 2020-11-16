@@ -113,14 +113,18 @@ class GUIImport(QtWidgets.QDialog, Ui_ImportWindow, myQTextEdit):
         self.import_status_table.setColumnCount(cols)
         self.import_status_table.setRowCount(rows)
         # set column labels
-        self.import_status_table.setHorizontalHeaderLabels(['ru', 'pl'])
+        col_names = self.data.columns.to_list()
+        def col_order(i):
+            return ['ru', 'pl', 'try_n', 'fail_n'].index(i)
+        col_names.sort(key=col_order)
+        self.import_status_table.setHorizontalHeaderLabels(col_names)
         col = self.import_status_table.horizontalHeader()
         col.setSectionResizeMode(QtWidgets.QHeaderView.Stretch)
         # populate table
-        for x in range(cols):
-            for y in range(rows):
-                cell = QtWidgets.QTableWidgetItem(str(self.data.iloc[y, x]))
-                self.import_status_table.setItem(y, x, cell)
+        for x in col_names:
+            for row in range(rows):
+                cell = QtWidgets.QTableWidgetItem(str(self.data.iloc[row,:].loc[x]))
+                self.import_status_table.setItem(row, col_names.index(x), cell)
 
     def accepted(self):
         return self.data
@@ -329,7 +333,7 @@ class GUIWordsCtr(QtCore.QObject):
         self._view.search.setValidator(validSearch)
 
     def toolTipHovered(self, href):
-        if href[-1] == 'G': # to be translated by google and shall be handled by self.toolTipActivated
+        if href and href[-1] == 'G': # to be translated by google and shall be handled by self.toolTipActivated
             return
         try:
             exp = self.toolTipTxt.exp[self.toolTipTxt.abr == href]
@@ -339,7 +343,7 @@ class GUIWordsCtr(QtCore.QObject):
         QtWidgets.QToolTip.showText(QtGui.QCursor.pos(), exp)
     
     def toolTipActivated(self, href):
-        if href[-1] != 'G': # translate only links from ru_wiki example
+        if href and href[-1] != 'G': # translate only links from ru_wiki example
             return
         try:
             exp = self._logic.googl.translate_q(href[:-1])

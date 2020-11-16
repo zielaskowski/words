@@ -48,7 +48,8 @@ class Dictionary:
         none_i = self.db[self.db.ru == 'none'].index
         self.db.drop(none_i, inplace=True)
         self.err = ''
-        self.db_temp = self.db_temp.iloc[0:0]  # reset data frame
+        #self.db_temp = self.db_temp.iloc[0:0]  # reset data frame
+        self.db_temp = pd.DataFrame(columns=['ru', 'pl'])
         if not txt:
             try:
                 db_file = sqlite3.connect(words)
@@ -177,8 +178,6 @@ class Dictionary:
             self.history_index = len(self.history) - 1
             row = self.db.iloc[line_no]
         else:  # return selected line
-            # DEBUG
-            print(line_no,' z ',len(self.db), self.history)
             if line_no > len(self.db):
                 line_no = len(self.db)
             row = self.db.iloc[line_no]
@@ -882,7 +881,7 @@ class Wiki:
         # sibling: <ol><li> with <span> class="example-fullblock"
         #                         <span> class="example-fullblock"
         #               <li> with <span> class="example-fullblock"
-        exa = bs("<div><h3>przykłady z ru_wiki</h3><p><i>(dwukliknij zdanie myszką, żeby zobaczyć tłumaczenie)</i></p><dl></dl></div>", 'lxml')
+        exa = bs("<div><h3>przykłady z ru_wiki</h3><p><i>(kliknij zdanie myszką, żeby zobaczyć tłumaczenie)</i></p><dl></dl></div>", 'lxml')
         html = self._html[wrd_i]['ru']
 
         def rightH4Tag(tag):
