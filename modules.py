@@ -37,12 +37,11 @@ class Dictionary:
         self.wiki = Wiki(trans_file)
         self.googl = Googl()
 
-    def importTXT(self, words):
-        """allowed input formats:
-
-        "пожаловать		Witamy", str,  words separated with white characters
-
-        or list of strings as above: result of file.readlines()
+    def importTXT(self, words, txt=True):
+        """allowed input formats: \n
+        txt=True: "пожаловать		Witamy", str,  words separated with white characters \n
+        txt=True:or list of strings as above: result of file.readlines()
+        txt=False: read sqlite db and merge
         """
         # may happen that ru=none is left in the db
         # we need to make sure it is deleted
@@ -50,16 +49,24 @@ class Dictionary:
         self.db.drop(none_i, inplace=True)
         self.err = ''
         self.db_temp = self.db_temp.iloc[0:0]  # reset data frame
-        if type(words) == list:
-            for w in words:
-                if type(w) == str:
-                    self.__add_str__(w)
-                else:
-                    self.err += f'<p>IMPORT: Can process only strings, instead found {type(w)}</p>'
-        elif type(words) == str:
-            self.__add_str__(words)
+        if not txt:
+            try:
+                db_file = sqlite3.connect(words)
+                self.db_temp = pd.read_sql_query("SELECT * FROM dic", db_file)
+                #  TODO: check if proper file and properly opened
+            except:
+                return None
         else:
-            self.err += f'Not allowed type {type(words)}\n'
+            if type(words) == list:
+                for w in words:
+                    if type(w) == str:
+                        self.__add_str__(w)
+                    else:
+                        self.err += f'<p>IMPORT: Can process only strings, instead found {type(w)}</p>'
+            elif type(words) == str:
+                self.__add_str__(words)
+            else:
+                self.err += f'Not allowed type {type(words)}\n'
         self.db_temp.reset_index(inplace=True, drop=True)
         # remove rows already existing in self.db
         db_merge = pd.merge(self.db, self.db_temp, left_on=['ru', 'pl'], right_on=['ru', 'pl'], how='right',
@@ -69,7 +76,11 @@ class Dictionary:
         db_drop = db_merge[rows_drop]
         len_raw = len(self.db_temp)
         self.db_temp = db_merge[rows_keep]
-        self.db_temp = self.db_temp.iloc[:, 0:2]
+        if txt:
+            self.db_temp = self.db_temp.iloc[:, 0:2]
+        else:
+            self.db_temp.rename(columns= {'try_n_y': 'try_n', 'fail_n_y': 'fail_n'}, inplace=True)
+            self.db_temp = self.db_temp.loc[:, {'ru','pl','try_n','fail_n'}]
         len_fin = len(self.db_temp)
         dup_no = len_raw - len_fin
         err = ''
@@ -81,7 +92,6 @@ class Dictionary:
                 if not True in [line.find(w) > -1 for w in db_drop['ru']]:
                     err += line
             self.err = err
-
             self.err += f'<p>Number of duplicates in active DB: {len_raw - len_fin}</p>'
         if not self.err:
             self.err = '<p>No errors</p>'
@@ -100,7 +110,7 @@ class Dictionary:
             self.history_index = len(self.history) - 1
 
     def __add_str__(self, words):
-        line = self.__parse_str__(words)
+        line = self.__parse_str__(words.lower())
         if line:
             # line += [0, 0]
             line_s = pd.Series(line, index=self.db_temp.columns)
@@ -366,8 +376,9 @@ class FileSystem:
             fp += self._fileIMP[self._PATH]
         if file:
             fp += self._fileIMP[self._NAME] + self._fileIMP[self._EXT]
-        if ext:  # 'text (*.txt)'
+        if ext:  # 'text (*.txt)' and db (*.s3db)
             fp += self.typeIMP[0] + ' (*' + self.typeIMP[1] + ')'
+            fp += ';;' + self.typeDB[0] + ' (*' + self.typeDB[1] + ')'
         if not path and not file and not ext:  # all: path+name+ext
             fp = self._fileIMP[self._PATH] + self._fileIMP[self._NAME] + self._fileIMP[self._EXT]
         return fp

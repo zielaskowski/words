@@ -157,7 +157,7 @@ class GUIWordsCtr(QtCore.QObject):
         file = self._fs.getGrammaExp()
         if file:
             self.toolTipTxt = pd.read_csv(file, sep='\t+', names=["abr", "exp", "del"],
-                                          comment='#', engine='python')
+                                          comment='#', engine='python', encoding='utf-8')
             self.toolTipTxt = self.toolTipTxt.iloc[:, 0:2]  # in case some tabs on end of the line
 
         # read configuration
@@ -513,6 +513,7 @@ class GUIWordsCtr(QtCore.QObject):
             self.setDisplayText(self._logic.print())
             self.disp_statusbar('openDB')
             self._fs.writeOpt("LastDB", self._fs.getDB())
+        self.fillCompleter()
 
     def _saveDB(self):
         if self._fs.getDB():
@@ -537,7 +538,7 @@ class GUIWordsCtr(QtCore.QObject):
         self.disp_statusbar('saved_as')
 
     def _import_TXT(self):
-        file = QFileDialog.getOpenFileName(self._view, caption='Choose TXT file',
+        file = QFileDialog.getOpenFileName(self._view, caption='Choose TXT od S3DB file',
                                            directory='',
                                            filter=self._fs.getIMP(ext=True))
         # Qt lib returning always / as path separator
@@ -550,12 +551,16 @@ class GUIWordsCtr(QtCore.QObject):
         # there is fackup when reading files created in linux into win
         # but it can be a more general problem when we don't know encoding
         # so read as bytes and than decode with 'utf-8'
-        file = []
-        with open(self._fs.getIMP(), 'rb') as f:
-            for line in f.readlines():
-                file.append(line.decode('utf-8'))
         self._view.setCursor(QtGui.QCursor(QtCore.Qt.WaitCursor))
-        imp = self._logic.importTXT(file)
+        ext = self._fs._split_path(path)[2]
+        if ext == self._fs.typeDB[1]: # sqlite file
+            imp = self._logic.importTXT(path, txt=False)
+        else:
+            file = []
+            with open(self._fs.getIMP(), 'rb') as f:
+                for line in f.readlines():
+                    file.append(line.decode('utf-8'))
+            imp = self._logic.importTXT(file)
         self._view.setCursor(QtGui.QCursor(QtCore.Qt.ArrowCursor))
         importView = GUIImport(self._logic.err, imp)
         self._view.setCursor(QtGui.QCursor(QtCore.Qt.WaitCursor))
@@ -572,8 +577,8 @@ class GUIWordsCtr(QtCore.QObject):
             # need to re-run wiki and tagger check and set wrds accordingly to what displayed
             self._logic.tager.tag(self._view.txt_ru.text())
             self._logic.wiki.checkWiki(self._logic.tager._lemma)
-            print()
         self._view.setCursor(QtGui.QCursor(QtCore.Qt.ArrowCursor))
+        self.fillCompleter()
 
     def _export_TXT(self):
         file = QFileDialog.getSaveFileName(self._view, caption='Export DB to TXT file',

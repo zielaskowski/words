@@ -461,7 +461,7 @@
                       <rect>
                        <x>0</x>
                        <y>0</y>
-                       <width>70</width>
+                       <width>96</width>
                        <height>30</height>
                       </rect>
                      </property>
@@ -506,7 +506,7 @@
                       <rect>
                        <x>0</x>
                        <y>0</y>
-                       <width>70</width>
+                       <width>96</width>
                        <height>30</height>
                       </rect>
                      </property>
@@ -551,7 +551,7 @@
                       <rect>
                        <x>0</x>
                        <y>0</y>
-                       <width>70</width>
+                       <width>96</width>
                        <height>30</height>
                       </rect>
                      </property>
@@ -596,7 +596,7 @@
                       <rect>
                        <x>0</x>
                        <y>0</y>
-                       <width>70</width>
+                       <width>96</width>
                        <height>30</height>
                       </rect>
                      </property>
@@ -992,13 +992,13 @@
   </action>
   <action name="import_TXT">
    <property name="text">
-    <string>import TXT</string>
+    <string>import TXT or DB</string>
    </property>
    <property name="toolTip">
     <string>import TXT</string>
    </property>
    <property name="statusTip">
-    <string>import words from TXT file and append to active DB</string>
+    <string>import words from TXT or DB file and append to active DB</string>
    </property>
   </action>
   <action name="exit">

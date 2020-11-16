@@ -9,6 +9,9 @@ TEST: do
 wiki problems:
 - odmiana: даже nawet
 
+wiki problems:
+- may happen we have ru.wiki, but pl.wiki will point to other language: зловоние
+
 import problem:
 переворачивать  przewracać, odmieniać
 less or more than two words
