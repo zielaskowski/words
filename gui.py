@@ -286,6 +286,9 @@ class GUIWordsCtr(QtCore.QObject):
         for tab_s in self.tab_desc:
             for tab_i in range(tabs_no):
                 exec(f'self._view.txt_desc_{tab_s}_{tab_i + 1}.linkHovered.connect(self.toolTip)')
+        # catch link clicked (to translate ru_wiki exemples)
+        for tab_i in range(tabs_no):
+            exec(f'self._view.txt_desc_wiki_{tab_i + 1}.linkActivated.connect(self.toolTip)')
         # search box
         self._view.search.editingFinished.connect(self.found)
         self._view.search.installEventFilter(self)  # selected from completer by mouse
@@ -327,8 +330,12 @@ class GUIWordsCtr(QtCore.QObject):
 
     def toolTip(self, href):
         try:
-            exp = self.toolTipTxt.exp[self.toolTipTxt.abr == href]
-            exp = '<div style=\"width: 300px;\">' + exp.iloc[0] + '</div>'
+            if href[-1] == 'G': # to be translated by google
+                exp = self._logic.googl.translate_q(href[:-1])
+                exp = '<div style=\"width: 300px;\">' + exp + '</div>'
+            else:
+                exp = self.toolTipTxt.exp[self.toolTipTxt.abr == href]
+                exp = '<div style=\"width: 300px;\">' + exp.iloc[0] + '</div>'
         except:
             exp = ''
         QtWidgets.QToolTip.showText(QtGui.QCursor.pos(), exp)
