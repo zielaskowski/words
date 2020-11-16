@@ -285,7 +285,10 @@ class GUIWordsCtr(QtCore.QObject):
         tabs_no = self._view.tabWidget_tager.count()
         for tab_s in self.tab_desc:
             for tab_i in range(tabs_no):
-                exec(f'self._view.txt_desc_{tab_s}_{tab_i + 1}.linkHovered.connect(self.toolTip)')
+                exec(f'self._view.txt_desc_{tab_s}_{tab_i + 1}.linkHovered.connect(self.toolTipHovered)')
+        # catch link clicked (to translate ru_wiki exemples)
+        for tab_i in range(tabs_no):
+            exec(f'self._view.txt_desc_wiki_{tab_i + 1}.linkActivated.connect(self.toolTipActivated)')
         # search box
         self._view.search.editingFinished.connect(self.found)
         self._view.search.installEventFilter(self)  # selected from completer by mouse
@@ -325,10 +328,22 @@ class GUIWordsCtr(QtCore.QObject):
         validSearch = validSearchClass(words, self)
         self._view.search.setValidator(validSearch)
 
-    def toolTip(self, href):
+    def toolTipHovered(self, href):
+        if href[-1] == 'G': # to be translated by google and shall be handled by self.toolTipActivated
+            return
         try:
             exp = self.toolTipTxt.exp[self.toolTipTxt.abr == href]
             exp = '<div style=\"width: 300px;\">' + exp.iloc[0] + '</div>'
+        except:
+            exp = ''
+        QtWidgets.QToolTip.showText(QtGui.QCursor.pos(), exp)
+    
+    def toolTipActivated(self, href):
+        if href[-1] != 'G': # translate only links from ru_wiki example
+            return
+        try:
+            exp = self._logic.googl.translate_q(href[:-1])
+            exp = '<div style=\"width: 300px;\">' + exp + '</div>'
         except:
             exp = ''
         QtWidgets.QToolTip.showText(QtGui.QCursor.pos(), exp)

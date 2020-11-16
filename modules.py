@@ -653,6 +653,7 @@ class Wiki:
         self.data_it = {'translation': '',
                         'declination_pl': '',
                         'example': '',
+                        'example_ru': '',
                         'declination_ru': ''}  # extracted data from HTML will be here (raw HTML)
         self.data = []  # data{} for each word put to list
         self.wrd = []
@@ -698,6 +699,7 @@ class Wiki:
         # if ru wiki, extract data
         if self._html[wrd_i]['ru']:
             self._extractDeclination_ru(wrd_i=wrd_i)
+            self._extractExample_ru(wrd_i=wrd_i)
 
         return self.formatAll(wrd_i)
 
@@ -754,9 +756,9 @@ class Wiki:
         self.data[wrd_i]['translation'] = copy.copy(trans)
 
     def _prettyDeclination_ru(self, wrd_i):
-        '''Take declination from ru and pl
+        '''Take declination from ru and TODO pl
         take which avilable or merge.
-        If not a table, create a table, translate russian case
+        If not a table, TODO: create a table, translate russian case
         '''
         decli = self.data[wrd_i]['declination_ru']
         for tag in decli.find_all(bgcolor=re.compile('#eef9ff', re.I)):
@@ -875,6 +877,52 @@ class Wiki:
             exa = ''
         self.data[wrd_i]['example'] = copy.copy(exa)
 
+    def _extractExample_ru(self,wrd_i):
+        # <h4> with <span> id="Значение"
+        # sibling: <ol><li> with <span> class="example-fullblock"
+        #                         <span> class="example-fullblock"
+        #               <li> with <span> class="example-fullblock"
+        exa = bs("<div><h3>przykłady z ru_wiki</h3><p><i>(dwukliknij zdanie myszką, żeby zobaczyć tłumaczenie)</i></p><dl></dl></div>", 'lxml')
+        html = self._html[wrd_i]['ru']
+
+        def rightH4Tag(tag):
+            # class="mw-headline" id="Значение"
+            return tag.name == 'h4' and tag.find('span', id='Значение')
+
+        h4Tag = html.find(rightH4Tag)
+        if h4Tag is not None:
+            for sib in h4Tag.next_siblings: # next sibling shall be <ol>
+                if sib.name == 'ol':
+                    for ex in sib.find_all('span', class_="example-block"):
+                        # brak przykładu:
+                        # Отсутствует пример употребления (см. рекомендации). 
+                        if ex.text.find('(см. рекомендации)') + 1:
+                            continue
+                        # remove bibliography
+                        biblio = ex.find('span', class_="example-details") # bibliography, remove
+                        biblio.decompose()
+                        # new tags where we store text
+                        dd_tag = html.new_tag('dd')
+                        a_tag = html.new_tag('a')
+                        dd_tag.append(a_tag)
+                        # remove underline and set color to black
+                        dd_tag.a['style'] = " text-decoration: none; color:#000000;"
+                        dd_tag.a.string = ex.text
+                        dd_tag.a['href'] = ex.text + 'G' # extract only text. Use last letter G to recognize href source 
+                        exa.dl.append(copy.copy(dd_tag))
+                        # separate lines
+                        hr_tag = html.new_tag('hr')
+                        exa.dl.append(copy.copy(hr_tag))
+                    break # only first <ol> we take
+
+        # if nothing found, set empty str
+        try:
+            if exa.dd.text == '':
+                exa = ''
+        except:
+            exa = ''
+        self.data[wrd_i]['example_ru'] = copy.copy(exa)
+
     def checkWiki(self, wrd, lang=['pl', 'ru']):
         """ check if page exist (ask for HEAD only without downloading whole page)
         it requires for ANY of wiki exist (pl or ru). Still can happen that
@@ -885,9 +933,6 @@ class Wiki:
         wrd = [self._removeAcc(wrd_n) for wrd_n in wrd]
         if wrd == self.wrd:
             return
-        # for wrd_n in wrd:
-        #     if self._removeAcc(wrd_n) in self.wrd:
-        #         return
         # temporary we can add 'none" to dictionary
         # doesn't make sense to look for it, also because destroy previous data
         if wrd == ['none']:
@@ -923,6 +968,7 @@ class Wiki:
             wiki.div.append(copy.copy(data['declination_pl']))
         wiki.div.append(copy.copy(data['declination_ru']))
         wiki.div.append(copy.copy(data['example']))
+        wiki.div.append(copy.copy(data['example_ru']))
 
         return wiki.prettify()
 
