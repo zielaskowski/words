@@ -3,11 +3,17 @@ IMPORT: sort errors so first are YES? different colors for error groups.
 IMPORT: if duplicated ru, but different pl, allow decision what to do (merge, pl1 or pl2)
 GUI: edit db, table with filter capability
 TEST: do
+RIGHT CLICK: when destination empty, adding shall work as replace
 
+FASTER???
 
 
 wiki problems:
 - odmiana: даже nawet
+- odmiana: да
+
+tlumaczenie wiki:
+- трёх
 
 wiki problems:
 - may happen we have ru.wiki, but pl.wiki will point to other language: зловоние
