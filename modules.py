@@ -1023,8 +1023,8 @@ class Wiki:
 
 
 class Googl:
+    gt = Translator()
     def __init__(self):
-        self.gt = Translator()
         self.data_it = {'ru': '',
                         'pl': ''}
         self.data = [self.data_it]

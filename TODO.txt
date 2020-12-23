@@ -5,6 +5,10 @@ GUI: edit db, table with filter capability
 TEST: do
 RIGHT CLICK: when destination empty, adding shall work as replace
 
+automatic update of gTTS & gTTS-token
+
+DROPBOX integration
+
 FASTER???
 
 
