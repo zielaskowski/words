@@ -70,7 +70,11 @@ class Dictionary:
                 self.err += f'Not allowed type {type(words)}\n'
         self.db_temp.reset_index(inplace=True, drop=True)
         # remove rows already existing in self.db
-        db_merge = pd.merge(self.db, self.db_temp, left_on=['ru', 'pl'], right_on=['ru', 'pl'], how='right',
+        db_merge = pd.merge(self.db, 
+                            self.db_temp,
+                            left_on=['ru', 'pl'],
+                            right_on=['ru', 'pl'],
+                            how='right',
                             indicator=True)
         rows_keep = db_merge['_merge'] == 'right_only'
         rows_drop = [not i for i in rows_keep]
